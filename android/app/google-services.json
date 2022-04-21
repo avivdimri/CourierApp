@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "903399395266",
+    "firebase_url": "https://deliverysystemmanagement-default-rtdb.firebaseio.com",
+    "project_id": "deliverysystemmanagement",
+    "storage_bucket": "deliverysystemmanagement.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903399395266:android:3d4152955665907cfcd05b",
+        "android_client_info": {
+          "package_name": "com.dsm.courierapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903399395266-66gdb6j0sik4ucsagvjo5j74idut8flk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD5MCprAx92Km9ZT4cJYRSqoV9DvYLiE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903399395266-66gdb6j0sik4ucsagvjo5j74idut8flk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "903399395266-kjpq7cut1oaa9hmh15i3049bbfmctbec.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dsm.courierapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
