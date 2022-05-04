@@ -9,6 +9,15 @@
         android:label="my_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <service
+            android:name=".java.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,8 +45,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
         <meta-data
-            android:name="com.google.android.geo.API_KEV"
-            android:value="AIzaSyCqcNNmxm-9YBysFypGjn8BUwdM3TUUegw" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAD5MCprAx92Km9ZT4cJYRSqoV9DvYLiE8" />
 
     </application>
 </manifest>

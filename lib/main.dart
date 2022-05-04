@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/infoHandler/app_info.dart';
+import 'package:provider/provider.dart';
 //import 'Screens/ AllDeliveries.dart';
 import 'Screens/splashScreen.dart';
 
@@ -13,11 +15,14 @@ void main() async {
   await Firebase.initializeApp();
   runApp(
     MyApp(
-      child: MaterialApp(
-        title: 'Couriers App',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: const MySplashScreen(),
-        debugShowCheckedModeBanner: false,
+      child: ChangeNotifierProvider(
+        create: (context) => AppInfo(),
+        child: MaterialApp(
+          title: 'Couriers App',
+          theme: ThemeData(primarySwatch: Colors.blue),
+          home: const MySplashScreen(),
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     ),
   );

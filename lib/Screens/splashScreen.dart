@@ -33,7 +33,6 @@ class _MySplashScreenState extends State<MySplashScreen> {
       } else if (Platform.isIOS) {
         basicUri = "http://localhost:3000/";
       }
-      printstate("splash screen");
       if (!isLoggedIn) {
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => const LoginScreen()));

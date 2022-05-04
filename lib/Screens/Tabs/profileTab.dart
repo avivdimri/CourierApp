@@ -22,6 +22,8 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
       name = '';
       isLoggedIn = false;
       userId = '';
+      statusText = "Offline";
+      isCourierActive = false;
     });
     Fluttertoast.showToast(
         msg: "Sign out successfully.", timeInSecForIosWeb: 2);

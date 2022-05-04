@@ -23,7 +23,7 @@ class HomeTabPage extends StatefulWidget {
 
 class _HomeTabPageState extends State<HomeTabPage> {
   GoogleMapController? newGoogleMapController;
-  Completer<GoogleMapController> _controllerGoogleMap = Completer();
+  final Completer<GoogleMapController> _controllerGoogleMap = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -33,9 +33,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  String statusText = "Offline";
   Color buttonColor = Colors.grey;
-  bool isCourierActive = false;
 
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
@@ -69,7 +67,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
     super.initState();
 
     checkIfLocationPermissionAllowed();
-    print(_locationPermission.toString());
   }
 
   void blackThemeGoogleMap() {
@@ -240,6 +237,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("aviv is the king!!");
+    print("the status is : " + statusText.toString());
     return Stack(
       children: [
         GoogleMap(
@@ -273,7 +272,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
               onPressed: () {
                 if (!isCourierActive) {
                   courierIsOnline();
-                  updateCourierLocationAtRT();
+                  //updateCourierLocationAtRT();
                   setState(() {
                     statusText = "Online";
                     isCourierActive = true;
@@ -340,6 +339,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
     courierCurrentPosition = pos;
     Geofire.initialize("activeCouriers");
+    print("create new db");
     Geofire.setLocation(userId, courierCurrentPosition!.latitude,
         courierCurrentPosition!.longitude);
     //update the stauts of the courier
@@ -349,8 +349,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
   courierIsOffline() async {
     Geofire.removeLocation(userId);
     updateCorierStatus("offline");
-    await SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
-
     Future.delayed(const Duration(milliseconds: 2000), () async {
       if (Platform.isAndroid) {
         SystemNavigator.pop();
@@ -361,6 +359,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   updateCourierLocationAtRT() {
+    print("update location");
     streamSubscriptionPosition =
         Geolocator.getPositionStream().listen((Position position) {
       courierCurrentPosition = position;

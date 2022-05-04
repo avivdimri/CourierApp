@@ -64,7 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoggedIn = true;
         userId = id;
       });
-      printstate("login screen");
       emailTextEditingController.clear();
       Fluttertoast.showToast(
           msg: "Sign in successfully.", timeInSecForIosWeb: 3);

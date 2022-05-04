@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import ' AllDeliveries.dart';
 import 'Tabs/homeTab.dart';
+import 'Tabs/myDeliveriesTab.dart';
 import 'Tabs/profileTab.dart';
 import 'Tabs/ratingTab.dart';
 
@@ -35,11 +36,11 @@ class _MainScreenState extends State<MainScreen>
         physics: const NeverScrollableScrollPhysics(),
         controller: tabController,
         children: [
-          const HomeTabPage(),
+          HomeTabPage(),
           //MyDeliveriesTabPage(),
           AllDeliveries(),
-          const RatingsTabPage(),
-          const ProfileTabPage(),
+          RatingsTabPage(),
+          ProfileTabPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
