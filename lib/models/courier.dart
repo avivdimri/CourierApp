@@ -15,7 +15,7 @@ class Courier {
     required this.password,
     required this.phone_number,
     required this.VehicleType,
-    required this.company_id,
+    this.company_id = const [],
     this.status = "offline",
   });
 
@@ -38,7 +38,7 @@ class Courier {
   Map<String, dynamic> toJson() => {
         'first_name': first_name,
         'last_name': last_name,
-        'email': email,
+        'user_name': email,
         'password': password,
         'phone_number': phone_number,
         'Vehicle_type': VehicleType,
