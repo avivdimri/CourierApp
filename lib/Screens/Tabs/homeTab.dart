@@ -10,8 +10,10 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:my_app/push_notfications/push_notfications_syystem.dart';
 
 import '../../assistants/assistant_methods.dart';
+import '../../assistants/black_theme.dart';
 import '../../authentication/global.dart';
 
 class HomeTabPage extends StatefulWidget {
@@ -42,7 +44,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     }
   }
 
-  locateDriverPosition() async {
+  void locateDriverPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     courierCurrentPosition = cPosition;
@@ -62,177 +64,18 @@ class _HomeTabPageState extends State<HomeTabPage> {
     print("this is your address = " + humanReadableAddress);
   }
 
+  readCurrentCourierInfo() async {
+    PushNotficationsSystem pushNotficationsSystem = PushNotficationsSystem();
+    pushNotficationsSystem.initCloudMessaging(context);
+    pushNotficationsSystem.generateToken();
+  }
+
   @override
   void initState() {
     super.initState();
 
     checkIfLocationPermissionAllowed();
-  }
-
-  void blackThemeGoogleMap() {
-    newGoogleMapController!.setMapStyle('''
-                      [
-                        {
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#242f3e"
-                            }
-                          ]
-                        },
-                        {
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#746855"
-                            }
-                          ]
-                        },
-                        {
-                          "elementType": "labels.text.stroke",
-                          "stylers": [
-                            {
-                              "color": "#242f3e"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "administrative.locality",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#d59563"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "poi",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#d59563"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "poi.park",
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#263c3f"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "poi.park",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#6b9a76"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road",
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#38414e"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road",
-                          "elementType": "geometry.stroke",
-                          "stylers": [
-                            {
-                              "color": "#212a37"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#9ca5b3"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road.highway",
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#746855"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road.highway",
-                          "elementType": "geometry.stroke",
-                          "stylers": [
-                            {
-                              "color": "#1f2835"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "road.highway",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#f3d19c"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "transit",
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#2f3948"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "transit.station",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#d59563"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "water",
-                          "elementType": "geometry",
-                          "stylers": [
-                            {
-                              "color": "#17263c"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "water",
-                          "elementType": "labels.text.fill",
-                          "stylers": [
-                            {
-                              "color": "#515c6d"
-                            }
-                          ]
-                        },
-                        {
-                          "featureType": "water",
-                          "elementType": "labels.text.stroke",
-                          "stylers": [
-                            {
-                              "color": "#17263c"
-                            }
-                          ]
-                        }
-                      ]
-                  ''');
+    readCurrentCourierInfo();
   }
 
   @override
@@ -250,7 +93,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
             newGoogleMapController = controller;
 
             //black theme
-            blackThemeGoogleMap();
+            blackThemeGoogleMap(newGoogleMapController);
             locateDriverPosition();
           },
         ),
@@ -317,23 +160,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
   }
 
-  updateCorierStatus(String status) async {
-    var json = jsonEncode(<String, String>{
-      'status': status,
-    });
-    try {
-      Response response = await dio.put(
-        basicUri + 'courier_status/$userId',
-        data: json,
-      );
-
-      print('User updated: ${response.data}');
-    } catch (e) {
-      print('Error updating user: $e');
-    }
-  }
-
-  courierIsOnline() async {
+  void courierIsOnline() async {
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
@@ -346,7 +173,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     updateCorierStatus("idle");
   }
 
-  courierIsOffline() async {
+  void courierIsOffline() async {
     Geofire.removeLocation(userId);
     updateCorierStatus("offline");
     Future.delayed(const Duration(milliseconds: 2000), () async {
@@ -358,7 +185,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     });
   }
 
-  updateCourierLocationAtRT() {
+  void updateCourierLocationAtRT() {
     print("update location");
     streamSubscriptionPosition =
         Geolocator.getPositionStream().listen((Position position) {
@@ -371,5 +198,21 @@ class _HomeTabPageState extends State<HomeTabPage> {
           courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
       newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
     });
+  }
+}
+
+void updateCorierStatus(String status) async {
+  var json = jsonEncode(<String, String>{
+    'status': status,
+  });
+  try {
+    Response response = await dio.put(
+      basicUri + 'courier_status/$userId',
+      data: json,
+    );
+
+    print('User updated: ${response.data}');
+  } catch (e) {
+    print('Error updating user: $e');
   }
 }

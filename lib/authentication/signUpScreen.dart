@@ -56,8 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: emailTextEditingController.text.trim(),
         password: passwordTextEditingController.text.trim(),
         phone_number: phoneTextEditingController.text.trim(),
-        VehicleType: selectdVehicleType!,
-        company_id: [companyIdTextEditingController.text.trim()]);
+        VehicleType: selectdVehicleType!);
     Map<String, dynamic> json = courier.toJson();
     var dio = Dio();
     Response? response;
@@ -260,31 +259,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-            TextField(
-              controller: companyIdTextEditingController,
-              keyboardType: TextInputType.phone,
-              style: const TextStyle(
-                color: Colors.grey,
-              ),
-              decoration: const InputDecoration(
-                labelText: "Company Id",
-                hintText: "Company Id",
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 10,
-                ),
-                labelStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            // TextField(
+            //   controller: companyIdTextEditingController,
+            //   keyboardType: TextInputType.phone,
+            //   style: const TextStyle(
+            //     color: Colors.grey,
+            //   ),
+            //   decoration: const InputDecoration(
+            //     labelText: "Company Id",
+            //     hintText: "Company Id",
+            //     enabledBorder: UnderlineInputBorder(
+            //       borderSide: BorderSide(color: Colors.grey),
+            //     ),
+            //     focusedBorder: UnderlineInputBorder(
+            //       borderSide: BorderSide(color: Colors.grey),
+            //     ),
+            //     hintStyle: TextStyle(
+            //       color: Colors.grey,
+            //       fontSize: 10,
+            //     ),
+            //     labelStyle: TextStyle(
+            //       color: Colors.grey,
+            //       fontSize: 14,
+            //     ),
+            //   ),
+            // ),
+
             const SizedBox(
               height: 20,
             ),
