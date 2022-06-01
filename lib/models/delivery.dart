@@ -1,35 +1,42 @@
+import 'package:my_app/models/contact_info.dart';
+
 import 'location.dart';
 
 class Delivery {
   String id;
-  String src_contact;
+  ContactInfo src_contact;
+  ContactInfo dst_contact;
   String timing;
-  int company_id;
+  String company_id;
   Location src;
+  String src_address;
   Location dest;
+  String dest_address;
   String status;
 
   Delivery(
       {required this.id,
       required this.src_contact,
+      required this.dst_contact,
       required this.timing,
       required this.company_id,
       required this.src,
+      required this.src_address,
       required this.dest,
+      required this.dest_address,
       required this.status});
-
-  int getLength() {
-    return 1;
-  }
 
   factory Delivery.fromJson(Map<String, dynamic> json) {
     return Delivery(
         id: json['_id'],
-        src_contact: json['src_contact'],
-        timing: json['timing'],
-        company_id: int.parse(json['company_id']),
+        src_contact: ContactInfo.fromJson(json['src_contact']),
+        dst_contact: ContactInfo.fromJson(json['dst_contact']),
+        timing: json['express'],
+        company_id: json['company_id'],
         src: Location.fromJson(json['src']),
-        dest: Location.fromJson(json['destination']),
+        src_address: json['src_address'],
+        dest: Location.fromJson(json['dest']),
+        dest_address: json['dest_address'],
         status: json['status']);
   }
 

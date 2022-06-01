@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,7 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController passwordTextEditingController = TextEditingController();
   TextEditingController companyIdTextEditingController =
       TextEditingController();
-  List<String> vehicleTypesList = ["bike", "Scooter", "car", "van"];
+  List<String> vehicleTypesList = ["bike", "scooter", "car", "van"];
   String? selectdVehicleType;
 
   validateForm() {
@@ -57,25 +59,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: passwordTextEditingController.text.trim(),
         phone_number: phoneTextEditingController.text.trim(),
         VehicleType: selectdVehicleType!);
-    Map<String, dynamic> json = courier.toJson();
-    var dio = Dio();
+    Map<String, dynamic> jsonData = courier.toJson();
     Response? response;
     try {
-      response = await dio.post(basicUri + 'sign_up_courier', data: json);
+      response = await dio.post(basicUri + 'api/register', data: jsonData);
     } catch (onError) {
       Navigator.pop(context);
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
-    if (response != null) {
-      print(response);
+    var data = response!.data;
+    if (data == "The registerion of user is completed successfuly!") {
       Fluttertoast.showToast(
           msg: "Acocount has created.", timeInSecForIosWeb: 3);
-      Navigator.push(context,
-          MaterialPageRoute(builder: ((context) => const MySplashScreen())));
     } else {
-      Navigator.pop(context);
-      Fluttertoast.showToast(msg: "Acocount has not been created.");
+      Fluttertoast.showToast(msg: "Error. " + data, timeInSecForIosWeb: 3);
     }
+    Navigator.push(context,
+        MaterialPageRoute(builder: ((context) => const MySplashScreen())));
   }
 
   @override
@@ -234,8 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             DropdownButton(
               iconSize: 20,
-              // icon: Icon(Icons.),
-              dropdownColor: Color.fromARGB(218, 255, 255, 255),
+              dropdownColor: const Color.fromARGB(218, 255, 255, 255),
               hint: const Text(
                 "Please choose vehicle type",
                 style: TextStyle(
@@ -259,32 +258,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-            // TextField(
-            //   controller: companyIdTextEditingController,
-            //   keyboardType: TextInputType.phone,
-            //   style: const TextStyle(
-            //     color: Colors.grey,
-            //   ),
-            //   decoration: const InputDecoration(
-            //     labelText: "Company Id",
-            //     hintText: "Company Id",
-            //     enabledBorder: UnderlineInputBorder(
-            //       borderSide: BorderSide(color: Colors.grey),
-            //     ),
-            //     focusedBorder: UnderlineInputBorder(
-            //       borderSide: BorderSide(color: Colors.grey),
-            //     ),
-            //     hintStyle: TextStyle(
-            //       color: Colors.grey,
-            //       fontSize: 10,
-            //     ),
-            //     labelStyle: TextStyle(
-            //       color: Colors.grey,
-            //       fontSize: 14,
-            //     ),
-            //   ),
-            // ),
-
             const SizedBox(
               height: 20,
             ),

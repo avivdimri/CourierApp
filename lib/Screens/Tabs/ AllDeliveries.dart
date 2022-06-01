@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/Screens/Tabs/detailsDeliveryPage.dart';
 import 'package:my_app/authentication/global.dart';
 
@@ -16,12 +17,16 @@ class _AllDeliveriesState extends State<AllDeliveries> {
   late List<Delivery> filteredDeliveries = [];
   bool isSearching = false;
   getDeliveries() async {
-    var response = await Dio().get(basicUri, queryParameters: {'id': userId});
-    var jsonList = response.data;
-    var data = json.decode(jsonList);
-    var map = data.map<Delivery>((json) => Delivery.fromJson(json));
-    print(map);
-    return map.toList();
+    try {
+      var response = await dio.get(basicUri, queryParameters: {'id': userId});
+      var jsonList = response.data;
+      var data = json.decode(jsonList);
+      var map = data.map<Delivery>((json) => Delivery.fromJson(json));
+      return map.toList();
+    } catch (onError) {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+    }
   }
 
   @override
@@ -38,8 +43,9 @@ class _AllDeliveriesState extends State<AllDeliveries> {
   void _filterDeliveries(value) {
     setState(() {
       filteredDeliveries = deliveries
-          .where((delivery) =>
-              delivery.src_contact.toLowerCase().contains(value.toLowerCase()))
+          .where((delivery) => delivery.src_contact.name
+              .toLowerCase()
+              .contains(value.toLowerCase()))
           .toList();
     });
   }

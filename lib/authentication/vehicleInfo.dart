@@ -10,7 +10,7 @@ class VehicleInfoScreen extends StatefulWidget {
 class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   TextEditingController VehicleTypeTextEditingController =
       TextEditingController();
-  List<String> VehicleTypesList = ["bike", "Scooter", "car", "van"];
+  List<String> VehicleTypesList = ["bike", "scooter", "car", "van"];
   String? selectdVehicleType;
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             DropdownButton(
               iconSize: 20,
               // icon: Icon(Icons.),
-              dropdownColor: Color.fromARGB(218, 255, 255, 255),
+              dropdownColor: const Color.fromARGB(218, 255, 255, 255),
               hint: const Text(
                 "Please choose vehicle type",
                 style: TextStyle(
@@ -99,8 +99,10 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             ),
             ElevatedButton(
                 onPressed: (() {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (c) => VehicleInfoScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (c) => const VehicleInfoScreen()));
                 }),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.lightGreenAccent,

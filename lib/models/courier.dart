@@ -5,7 +5,7 @@ class Courier {
   String password;
   String phone_number;
   String VehicleType;
-  List<String> company_id;
+  List<dynamic> company_id;
   String status;
 
   Courier({
@@ -27,10 +27,10 @@ class Courier {
     return Courier(
         first_name: json['first_name'],
         last_name: json['last_name'],
-        email: json['email'],
+        email: json['user_name'],
         password: json['password'],
         phone_number: json['phone_number'],
-        VehicleType: json['Vehicle_type'],
+        VehicleType: json['VehicleType'],
         company_id: json['company_id'],
         status: json['status']);
   }
@@ -41,7 +41,7 @@ class Courier {
         'user_name': email,
         'password': password,
         'phone_number': phone_number,
-        'Vehicle_type': VehicleType,
+        'VehicleType': VehicleType,
         'company_id': company_id,
         'status': status,
       };

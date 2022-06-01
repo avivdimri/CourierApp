@@ -15,43 +15,38 @@ class PushNotficationsSystem {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   Future initCloudMessaging(BuildContext context) async {
     // terminated
-    print(" in the function");
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage? remoteMessage) {
       if (remoteMessage != null) {
-        print("TThis is order id: " + remoteMessage.data["order_id"]);
-        readOrderRequestInfo(remoteMessage.data["order_id"], context);
+        readOrderRequestInfo(remoteMessage.data["deliveryId"], context);
       }
     });
 
     // foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
-      print("TThis is order id: " + remoteMessage!.data["order_id"]);
-      readOrderRequestInfo(remoteMessage.data["order_id"], context);
+      readOrderRequestInfo(remoteMessage!.data["deliveryId"], context);
     });
     // background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? remoteMessage) {
-      print("TThis is order id: " + remoteMessage!.data["order_id"]);
-      readOrderRequestInfo(remoteMessage.data["order_id"], context);
+      readOrderRequestInfo(remoteMessage!.data["deliveryId"], context);
     });
   }
 
   readOrderRequestInfo(String orderId, BuildContext context) async {
     var response;
     try {
-      response = await Dio().get(basicUri + 'get_order/$orderId');
+      response = await dio.get(basicUri + 'get_order/$orderId');
     } catch (onError) {
+      Navigator.pop(context);
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
       audioPlayer.open(Audio("music/mixkit-positive-notification-951.mp3"));
       audioPlayer.play();
       var jsonList = response.data;
-      print("11111111: " + jsonList);
       var data = json.decode(jsonList);
       Delivery delivery = Delivery.fromJson(data);
-      print("delivery details is " + delivery.toString());
 
       showDialog(
           context: context,

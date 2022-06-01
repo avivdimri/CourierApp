@@ -1,13 +1,19 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_app/assistants/request_assistant.dart';
 import 'package:my_app/authentication/global.dart';
+import 'package:my_app/models/delivery.dart';
 import 'package:provider/provider.dart';
 
 import '../infoHandler/app_info.dart';
 import '../models/direction_details_info.dart';
 import '../models/directions.dart';
-import '../models/user_model.dart';
 
 class AssistantMethods {
   static Future<String> searchAddressForGeographicCoOrdinates(
@@ -19,7 +25,6 @@ class AssistantMethods {
     var requestResponse = await RequestAssistant.receiveRequest(apiUrl);
 
     if (requestResponse != "Error Occurred, Failed. No Response.") {
-      print("step 1!!!!!1");
       humanReadableAddress = requestResponse["results"][0]["formatted_address"];
 
       Directions userPickUpAddress = Directions();
@@ -33,21 +38,6 @@ class AssistantMethods {
 
     return humanReadableAddress;
   }
-
-  // static void readCurrentOnlineUserInfo() async {
-  //   currentFirebaseUser = fAuth.currentUser;
-
-  //   DatabaseReference userRef = FirebaseDatabase.instance
-  //       .ref()
-  //       .child("users")
-  //       .child(currentFirebaseUser!.uid);
-
-  //   userRef.once().then((snap) {
-  //     if (snap.snapshot.value != null) {
-  //       userModelCurrentInfo = UserModel.fromSnapshot(snap.snapshot);
-  //     }
-  //   });
-  // }
 
   static Future<DirectionDetailsInfo?>
       obtainOriginToDestinationDirectionDetails(
@@ -77,5 +67,44 @@ class AssistantMethods {
         responseDirectionApi["routes"][0]["legs"][0]["duration"]["value"];
 
     return directionDetailsInfo;
+  }
+
+  static pauseLiveLocationUpdates() {
+    streamSubscriptionPosition!.pause();
+    Geofire.removeLocation(userId);
+  }
+
+  static resumeLiveLocationUpdates() {
+    streamSubscriptionPosition!.resume();
+    Geofire.setLocation(userId, courierCurrentPosition!.latitude,
+        courierCurrentPosition!.longitude);
+  }
+
+  static void readTripsKeysForOnlineCourier(context) async {
+    // get all orders of current corier
+    List<Delivery> deliveries = [];
+    var response;
+    try {
+      response = await dio.get(basicUri, queryParameters: {'id': userId});
+    } catch (onError) {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+    }
+    var jsonList = response.data;
+    var data = json.decode(jsonList);
+    print(" the delivries are " + data.toString());
+    var map = data.map<Delivery>((json) => Delivery.fromJson(json));
+    deliveries = map.toList();
+
+    int overAllTripsCounter = map.length;
+    Provider.of<AppInfo>(context, listen: false)
+        .updateOverAllTripsCounter(overAllTripsCounter);
+
+    for (Delivery delivery in deliveries) {
+      if (delivery.status == "arrived") {
+        Provider.of<AppInfo>(context, listen: false)
+            .updateOverAllTripsHistoryInformation(delivery);
+      }
+    }
   }
 }

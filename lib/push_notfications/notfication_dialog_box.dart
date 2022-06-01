@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/Screens/new_trip_screen.dart';
+import 'package:my_app/assistants/assistant_methods.dart';
 import 'package:my_app/authentication/global.dart';
 import 'package:my_app/models/delivery.dart';
 
@@ -32,7 +37,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
             height: 14,
           ),
           Image.asset(
-            "images/22kf_im3i_200729.jpg",
+            "images/22kf_im3i_200729.png",
             width: 160,
           ),
           const SizedBox(
@@ -71,7 +76,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          widget.deliveryDetails!.src.lat,
+                          widget.deliveryDetails!.src_address,
                           style: const TextStyle(
                             fontSize: 16,
                           ),
@@ -98,7 +103,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          widget.deliveryDetails!.dest.lat,
+                          widget.deliveryDetails!.dest_address,
                           style: const TextStyle(
                             fontSize: 16,
                           ),
@@ -128,7 +133,16 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                       audioPlayer.pause();
                       audioPlayer.stop();
                       audioPlayer = AssetsAudioPlayer();
-                      Navigator.pop(context);
+                      Fluttertoast.showToast(
+                          msg: "the delivery request has been declined");
+                      //send decline to the notfication
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomeTabPage()));
+                      /*Future.delayed(const Duration(milliseconds: 2000), () {
+                        SystemNavigator.pop();
+                      });*/
                     },
                     child: Text(
                       "Decline".toUpperCase(),
@@ -163,11 +177,13 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
     );
   }
 
-  acceptDeliverRequest(BuildContext context) {
+  acceptDeliverRequest(BuildContext context) async {
     //change deliver status in server
-    // assing order id to courier documents
-    updateCorierStatus("busy");
+    updateDeliveryStatus("assigned", widget.deliveryDetails!);
+    //add order to courier's history
+    updateCourierStatus("busy");
 
+    AssistantMethods.pauseLiveLocationUpdates();
     Navigator.push(
         context,
         MaterialPageRoute(

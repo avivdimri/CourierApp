@@ -10,11 +10,13 @@ import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:h3_flutter/h3_flutter.dart';
+import 'package:my_app/assistants/assistant_methods.dart';
+import 'package:my_app/models/delivery.dart';
 import 'package:my_app/push_notfications/push_notfications_syystem.dart';
-
-import '../../assistants/assistant_methods.dart';
 import '../../assistants/black_theme.dart';
 import '../../authentication/global.dart';
+import '../../models/courier.dart';
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
@@ -31,7 +33,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
-  Position? courierCurrentPosition;
+
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
@@ -58,16 +60,18 @@ class _HomeTabPageState extends State<HomeTabPage> {
     newGoogleMapController!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress =
-        await AssistantMethods.searchAddressForGeographicCoOrdinates(
-            courierCurrentPosition!, context);
-    print("this is your address = " + humanReadableAddress);
+    //String humanReadableAddress =
+    //  await AssistantMethods.searchAddressForGeographicCoOrdinates(
+    //    courierCurrentPosition!, context);
+    //print("this is your address = " + humanReadableAddress);
   }
 
   readCurrentCourierInfo() async {
     PushNotficationsSystem pushNotficationsSystem = PushNotficationsSystem();
     pushNotficationsSystem.initCloudMessaging(context);
     pushNotficationsSystem.generateToken();
+    AssistantMethods.readTripsKeysForOnlineCourier(context);
+    getCourierInfo();
   }
 
   @override
@@ -80,8 +84,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("aviv is the king!!");
-    print("the status is : " + statusText.toString());
     return Stack(
       children: [
         GoogleMap(
@@ -115,7 +117,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
               onPressed: () {
                 if (!isCourierActive) {
                   courierIsOnline();
-                  //updateCourierLocationAtRT();
+                  updateCourierLocationAtRT();
                   setState(() {
                     statusText = "Online";
                     isCourierActive = true;
@@ -166,42 +168,77 @@ class _HomeTabPageState extends State<HomeTabPage> {
     );
     courierCurrentPosition = pos;
     Geofire.initialize("activeCouriers");
-    print("create new db");
+    DatabaseReference indexRef =
+        FirebaseDatabase.instance.ref().child("indexes");
+    GeoCoord geoCoord = GeoCoord(
+        lon: courierCurrentPosition!.longitude,
+        lat: courierCurrentPosition!.latitude);
+    //var index = coordToIndex(courierCurrentPosition!.longitude,
+    // courierCurrentPosition!.latitude);
+    var index = h3.geoToH3(geoCoord, 7);
+    indexRef.child(userId).set(index.toRadixString(16));
+    indexRef.child(userId).set(index);
     Geofire.setLocation(userId, courierCurrentPosition!.latitude,
         courierCurrentPosition!.longitude);
     //update the stauts of the courier
-    updateCorierStatus("idle");
+
+    updateCourierStatus("idle");
   }
 
   void courierIsOffline() async {
+    FirebaseDatabase.instance.ref().child("indexes").remove();
     Geofire.removeLocation(userId);
-    updateCorierStatus("offline");
+    updateCourierStatus("offline");
     Future.delayed(const Duration(milliseconds: 2000), () async {
-      if (Platform.isAndroid) {
-        SystemNavigator.pop();
-      } else if (Platform.isIOS) {
-        exit(0);
-      }
+      SystemNavigator.pop();
     });
   }
 
   void updateCourierLocationAtRT() {
-    print("update location");
     streamSubscriptionPosition =
         Geolocator.getPositionStream().listen((Position position) {
       courierCurrentPosition = position;
       if (isCourierActive) {
         Geofire.setLocation(userId, courierCurrentPosition!.latitude,
             courierCurrentPosition!.longitude);
+        DatabaseReference indexRef =
+            FirebaseDatabase.instance.ref().child("indexes");
+        GeoCoord geoCoord = GeoCoord(
+            lon: courierCurrentPosition!.longitude,
+            lat: courierCurrentPosition!.latitude);
+        //var index = coordToIndex(courierCurrentPosition!.longitude,
+        // courierCurrentPosition!.latitude);
+        var index = h3.geoToH3(geoCoord, 7);
+        indexRef.child(userId).set(index.toRadixString(16));
       }
       LatLng latLng = LatLng(
           courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
       newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
     });
   }
+
+  /*coordToIndex(longitude, latitude) {
+    print("the latlong is" + longitude.toString() + " " + latitude.toString());
+    GeoCoord geoCoord = GeoCoord(lon: longitude, lat: latitude);
+    return h3.geoToH3(geoCoord, 7);
+  }*/
+
+  Future<void> getCourierInfo() async {
+    try {
+      var response = await dio.get(basicUri + 'get_courier/$userId');
+      var jsonList = response.data;
+      var data = json.decode(jsonList);
+      setState(() {
+        courierInfo = Courier.fromJson(data);
+      });
+    } catch (onError) {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+    }
+  }
 }
 
-void updateCorierStatus(String status) async {
+void updateCourierStatus(String status) async {
   var json = jsonEncode(<String, String>{
     'status': status,
   });
@@ -211,6 +248,23 @@ void updateCorierStatus(String status) async {
       data: json,
     );
 
+    print('User updated: ${response.data}');
+  } catch (e) {
+    print('Error updating user: $e');
+  }
+}
+
+void updateDeliveryStatus(String status, Delivery delivery) async {
+  var deliveryId = delivery.id;
+  var json = jsonEncode(<String, String>{
+    'status': status,
+    'courier_id': userId,
+  });
+  try {
+    Response response = await dio.put(
+      basicUri + 'delivery_status/$deliveryId',
+      data: json,
+    );
     print('User updated: ${response.data}');
   } catch (e) {
     print('Error updating user: $e');

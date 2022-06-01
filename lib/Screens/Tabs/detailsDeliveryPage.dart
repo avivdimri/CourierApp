@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/Screens/Tabs/deliveryMap.dart';
-
 import '../../models/delivery.dart';
-import ' AllDeliveries.dart';
 
 class DetailDeliveryView extends StatelessWidget {
   final Delivery delivery;
@@ -12,10 +10,10 @@ class DetailDeliveryView extends StatelessWidget {
   List<String> getDetails() {
     List<String> details = [
       "id: " + delivery.id,
-      "src contact: " + delivery.src_contact,
+      "src contact: " + delivery.src_contact.name,
       "status: " + delivery.status,
       "timing: " + delivery.timing,
-      "company id: " + delivery.company_id.toString(),
+      "company id: " + delivery.company_id,
       "source lat: " + delivery.src.lat,
       "source long: " + delivery.src.long,
       "dest lat: " + delivery.dest.lat,
@@ -60,12 +58,6 @@ class DetailDeliveryView extends StatelessWidget {
         ),
       ),
     );
-
-    // body: ListView.builder(
-    //     itemCount: details.length,
-    //     itemBuilder: (BuildContext ctxt, int index) {
-    //       return Text(details[index], style: kStyle);
-    //     }));
   }
 }
 

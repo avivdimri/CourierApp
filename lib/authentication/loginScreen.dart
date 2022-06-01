@@ -41,36 +41,38 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
     var json = jsonEncode(<String, String>{
-      'username': emailTextEditingController.text.trim(),
+      'user_name': emailTextEditingController.text.trim(),
       'password': passwordTextEditingController.text.trim(),
     });
-    var d = Dio();
     Response? response;
     try {
-      response = await d.post(basicUri + 'sign_in_courier', data: json);
+      response = await dio.post(basicUri + 'api/login_courier', data: json);
     } catch (onError) {
       Navigator.pop(context);
-      print(onError.toString());
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
-      print(response);
-      var id = response.data as String;
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('username', emailTextEditingController.text.trim());
-      prefs.setString('userId', id);
-      setState(() {
-        name = emailTextEditingController.text.trim();
-        isLoggedIn = true;
-        userId = id;
-      });
-      emailTextEditingController.clear();
-      Fluttertoast.showToast(
-          msg: "Sign in successfully.", timeInSecForIosWeb: 3);
-      Navigator.push(context,
-          MaterialPageRoute(builder: ((context) => const MySplashScreen())));
+      if (response.data == "wrong username or password") {
+        //print("wrong username or password");
+        Fluttertoast.showToast(msg: "Error: wrong username or password");
+        Navigator.pop(context);
+      } else {
+        var id = response.data as String;
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', emailTextEditingController.text.trim());
+        prefs.setString('userId', id);
+        setState(() {
+          name = emailTextEditingController.text.trim();
+          isLoggedIn = true;
+          userId = id;
+        });
+        emailTextEditingController.clear();
+        Fluttertoast.showToast(
+            msg: "Sign in successfully.", timeInSecForIosWeb: 3);
+        Navigator.push(context,
+            MaterialPageRoute(builder: ((context) => const MySplashScreen())));
+      }
     } else {
-      // Navigator.pop(context);
       Fluttertoast.showToast(msg: "Sign in failed.");
     }
   }

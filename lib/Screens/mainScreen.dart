@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/Screens/trips_history_screen.dart';
+import 'package:my_app/models/trips_history_model.dart';
 import 'Tabs/ AllDeliveries.dart';
 import 'Tabs/homeTab.dart';
 import 'Tabs/myDeliveriesTab.dart';
 import 'Tabs/profileTab.dart';
-import 'Tabs/ratingTab.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -39,7 +40,9 @@ class _MainScreenState extends State<MainScreen>
           HomeTabPage(),
           //MyDeliveriesTabPage(),
           AllDeliveries(),
-          RatingsTabPage(),
+          TripsHistoryScreen(),
+          // RatingsTabPage(),
+
           ProfileTabPage(),
         ],
       ),
@@ -55,7 +58,7 @@ class _MainScreenState extends State<MainScreen>
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
-            label: "Ratings",
+            label: "History",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

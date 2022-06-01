@@ -1,10 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:my_app/Screens/Tabs/homeTab.dart';
+import 'package:my_app/authentication/global.dart';
 import 'package:my_app/models/delivery.dart';
 
+import '../assistants/assistant_methods.dart';
 import '../assistants/black_theme.dart';
+import '../widgets/progressDialog.dart';
 
 class NewTripScreen extends StatefulWidget {
   Delivery? deliveryDetails;
@@ -22,21 +27,233 @@ class _NewTripScreenState extends State<NewTripScreen> {
     zoom: 14.4746,
   );
 
-  String? buttonTitle = "Arrived";
-  Color? buttonColor = Colors.green;
+  String buttonTitle = "Arrived";
+  Color buttonColor = Colors.green;
+
+  Set<Marker> setOfMarkers = Set<Marker>();
+  Set<Circle> setOfCircle = Set<Circle>();
+  Set<Polyline> setOfPolyline = Set<Polyline>();
+  List<LatLng> polyLinePositionCoordinates = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+
+  double mapPadding = 0;
+  BitmapDescriptor? iconMarker;
+  var geoLocator = Geolocator();
+  String deliveryStatus = "accepted";
+  String durationOrgToDest = "";
+  bool isRequestDetails = false;
+
+  Future<void> drawPolyLineFromOriginToDestination(
+      LatLng originLatLng, LatLng destinationLatLng) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => ProgressDialog(
+        message: "Please wait...",
+      ),
+    );
+
+    var directionDetailsInfo =
+        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+            originLatLng, destinationLatLng);
+
+    Navigator.pop(context);
+
+    print("These are points = ");
+    print(directionDetailsInfo!.e_points);
+
+    PolylinePoints pPoints = PolylinePoints();
+    List<PointLatLng> decodedPolyLinePointsResultList =
+        pPoints.decodePolyline(directionDetailsInfo.e_points!);
+
+    polyLinePositionCoordinates.clear();
+
+    if (decodedPolyLinePointsResultList.isNotEmpty) {
+      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
+        polyLinePositionCoordinates
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+
+    setOfPolyline.clear();
+
+    setState(() {
+      Polyline polyline = Polyline(
+        color: Colors.purpleAccent,
+        polylineId: const PolylineId("PolylineID"),
+        jointType: JointType.round,
+        points: polyLinePositionCoordinates,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        geodesic: true,
+      );
+
+      setOfPolyline.add(polyline);
+    });
+
+    LatLngBounds boundsLatLng;
+    if (originLatLng.latitude > destinationLatLng.latitude &&
+        originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng =
+          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    } else if (originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+      );
+    } else if (originLatLng.latitude > destinationLatLng.latitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+      );
+    } else {
+      boundsLatLng =
+          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
+    }
+
+    newTripGoogleMapController!
+        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
+
+    Marker originMarker = Marker(
+      markerId: const MarkerId("originID"),
+      position: originLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+    );
+
+    Marker destinationMarker = Marker(
+      markerId: const MarkerId("destinationID"),
+      position: destinationLatLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+    );
+
+    setState(() {
+      setOfMarkers.add(originMarker);
+      setOfMarkers.add(destinationMarker);
+    });
+
+    Circle originCircle = Circle(
+      circleId: const CircleId("originID"),
+      fillColor: Colors.green,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: originLatLng,
+    );
+
+    Circle destinationCircle = Circle(
+      circleId: const CircleId("destinationID"),
+      fillColor: Colors.red,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: destinationLatLng,
+    );
+
+    setState(() {
+      setOfCircle.add(originCircle);
+      setOfCircle.add(destinationCircle);
+    });
+  }
+
+  createCourierIconMarker() {
+    if (iconMarker == null) {
+      ImageConfiguration imageConfiguration =
+          createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png")
+          .then((value) {
+        iconMarker = value;
+      });
+    }
+  }
+
+  void getCourierLocationAtRT() {
+    LatLng oldLatLng = LatLng(0, 0);
+    streamSubscriptionCourierLivePosition =
+        Geolocator.getPositionStream().listen((Position position) {
+      courierCurrentPosition = position;
+      LatLng latLngOnline = LatLng(
+          courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
+
+      Marker marker = Marker(
+        markerId: const MarkerId("AnimatedMarker"),
+        position: latLngOnline,
+        icon: iconMarker!,
+        infoWindow: const InfoWindow(title: "This is your location"),
+      );
+      setState(() {
+        CameraPosition cameraPosition =
+            CameraPosition(target: latLngOnline, zoom: 16);
+        newTripGoogleMapController!
+            .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+        setOfMarkers.removeWhere(
+            (element) => element.markerId.value == "AnimatedMarker");
+        setOfMarkers.add(marker);
+      });
+      oldLatLng = latLngOnline;
+      updateDurationTimeAtRT();
+    });
+  }
+
+  updateDurationTimeAtRT() async {
+    if (!isRequestDetails) {
+      isRequestDetails = true;
+      if (courierCurrentPosition == null) {
+        return;
+      }
+      LatLng originLatLng = LatLng(
+          courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
+      LatLng destLatLng;
+      if (deliveryStatus == "accepted") {
+        destLatLng = LatLng(double.parse(widget.deliveryDetails!.src.lat),
+            double.parse(widget.deliveryDetails!.src.long));
+      } else {
+        destLatLng = LatLng(double.parse(widget.deliveryDetails!.dest.lat),
+            double.parse(widget.deliveryDetails!.dest.long));
+      }
+      var directionInfo =
+          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+              originLatLng, destLatLng);
+      if (directionInfo != null) {
+        setState(() {
+          durationOrgToDest = directionInfo.duration_text!;
+        });
+      }
+      isRequestDetails = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    createCourierIconMarker();
     return Scaffold(
       body: Stack(
         children: [
           GoogleMap(
+            padding: EdgeInsets.only(bottom: mapPadding),
             mapType: MapType.normal,
             myLocationEnabled: true,
             initialCameraPosition: _kGooglePlex,
+            markers: setOfMarkers,
+            circles: setOfCircle,
+            polylines: setOfPolyline,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newTripGoogleMapController = controller;
+              setState(() {
+                mapPadding = 350;
+              });
+
               blackThemeGoogleMap(newTripGoogleMapController);
+              var courierCurrentLatLng = LatLng(
+                  courierCurrentPosition!.latitude,
+                  courierCurrentPosition!.longitude);
+
+              var deliveryPickUpLatLng = LatLng(
+                  double.parse(widget.deliveryDetails!.src.lat),
+                  double.parse(widget.deliveryDetails!.src.long));
+
+              drawPolyLineFromOriginToDestination(
+                  courierCurrentLatLng, deliveryPickUpLatLng);
+              getCourierLocationAtRT();
             },
           ),
           Positioned(
@@ -63,9 +280,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
                 child: Column(
                   children: [
                     //duration
-                    const Text(
-                      "18 mins",
-                      style: TextStyle(
+                    Text(
+                      durationOrgToDest,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.lightGreenAccent,
@@ -86,32 +303,35 @@ class _NewTripScreenState extends State<NewTripScreen> {
                     //username icon
                     Row(
                       children: [
+                        const Padding(
+                          padding: EdgeInsets.all(7.0),
+                          child: Icon(
+                            Icons.phone_android,
+                            color: Colors.blue,
+                          ),
+                        ),
                         Text(
-                          widget.deliveryDetails!.src_contact,
+                          "   " +
+                              widget.deliveryDetails!.src_contact.name +
+                              "   " +
+                              widget.deliveryDetails!.src_contact.phone,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.lightGreenAccent,
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Icon(
-                            Icons.phone_android,
                             color: Colors.grey,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(
-                      height: 18,
+                      height: 22,
                     ),
                     // usr pickup icon
                     Row(
                       children: [
                         Image.asset(
                           "images/origin.png",
-                          width: 30,
+                          width: 42,
                           height: 30,
                         ),
                         const SizedBox(
@@ -120,9 +340,11 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         Expanded(
                           child: Container(
                             child: Text(
-                              widget.deliveryDetails!.src.lat,
+                              widget.deliveryDetails!.src_address,
                               style: const TextStyle(
-                                  fontSize: 16, color: Colors.grey),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.grey),
                             ),
                           ),
                         ),
@@ -130,13 +352,13 @@ class _NewTripScreenState extends State<NewTripScreen> {
                     ),
                     //user Dropoff icon
                     const SizedBox(
-                      height: 20,
+                      height: 24,
                     ),
                     Row(
                       children: [
                         Image.asset(
                           "images/destination.png",
-                          width: 30,
+                          width: 42,
                           height: 30,
                         ),
                         const SizedBox(
@@ -145,9 +367,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         Expanded(
                           child: Container(
                             child: Text(
-                              widget.deliveryDetails!.dest.lat,
+                              widget.deliveryDetails!.dest_address,
                               style: const TextStyle(
-                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                                 color: Colors.grey,
                               ),
                             ),
@@ -169,7 +392,53 @@ class _NewTripScreenState extends State<NewTripScreen> {
                       height: 10.0,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (deliveryStatus == "accepted") {
+                          deliveryStatus = "arrived";
+                          setState(() {
+                            buttonTitle = "Start Trip";
+                            buttonColor = Colors.blueAccent;
+                          });
+                          // change stauts of the order in DB
+
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext b) => ProgressDialog(
+                                    message: "Loading...",
+                                  ));
+
+                          await drawPolyLineFromOriginToDestination(
+                              LatLng(
+                                  double.parse(widget.deliveryDetails!.src.lat),
+                                  double.parse(
+                                      widget.deliveryDetails!.src.long)),
+                              LatLng(
+                                  double.parse(
+                                      widget.deliveryDetails!.dest.lat),
+                                  double.parse(
+                                      widget.deliveryDetails!.dest.long)));
+                          Navigator.pop(context);
+                        } else if (deliveryStatus == "arrived") {
+                          deliveryStatus = "ontrip";
+                          setState(() {
+                            buttonTitle = "End Trip";
+                            buttonColor = Colors.redAccent;
+                          });
+                          updateDeliveryStatus(
+                              "collected", widget.deliveryDetails!);
+                        } else if (deliveryStatus == "ontrip") {
+                          //update DB status order
+                          updateDeliveryStatus(
+                              "arrived", widget.deliveryDetails!);
+                          streamSubscriptionCourierLivePosition!.cancel();
+                          AssistantMethods.resumeLiveLocationUpdates();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomeTabPage()));
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         primary: buttonColor,
                       ),
@@ -179,10 +448,10 @@ class _NewTripScreenState extends State<NewTripScreen> {
                         size: 25,
                       ),
                       label: Text(
-                        buttonTitle!,
+                        buttonTitle,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
