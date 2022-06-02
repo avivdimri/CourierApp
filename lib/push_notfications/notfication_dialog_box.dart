@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/Screens/new_trip_screen.dart';
 import 'package:my_app/assistants/assistant_methods.dart';
-import 'package:my_app/authentication/global.dart';
+import 'package:my_app/assistants/global.dart';
 import 'package:my_app/models/delivery.dart';
 
 import '../Screens/Tabs/homeTab.dart';

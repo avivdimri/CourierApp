@@ -6,7 +6,7 @@ import 'package:my_app/Screens/mainScreen.dart';
 import 'package:my_app/authentication/loginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../authentication/global.dart';
+import '../assistants/global.dart';
 
 class MySplashScreen extends StatefulWidget {
   const MySplashScreen({Key? key}) : super(key: key);
@@ -29,10 +29,11 @@ class _MySplashScreenState extends State<MySplashScreen> {
         });
       }
       if (Platform.isAndroid) {
-        basicUri = "http://10.0.2.2:3000/";
+        basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       } else if (Platform.isIOS) {
-        basicUri = "http://localhost:3000/";
+        basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       }
+
       if (!isLoggedIn) {
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => const LoginScreen()));

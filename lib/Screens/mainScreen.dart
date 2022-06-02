@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/Screens/feedScreen.dart';
+import 'package:my_app/Screens/myDeliveriesScreen.dart';
 import 'package:my_app/Screens/trips_history_screen.dart';
 import 'package:my_app/models/trips_history_model.dart';
 import 'Tabs/ AllDeliveries.dart';
@@ -27,7 +29,7 @@ class _MainScreenState extends State<MainScreen>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -39,7 +41,9 @@ class _MainScreenState extends State<MainScreen>
         children: [
           HomeTabPage(),
           //MyDeliveriesTabPage(),
-          AllDeliveries(),
+          //AllDeliveries(),
+          MyDeliveriesScreen(),
+          FeedScreen(),
           TripsHistoryScreen(),
           // RatingsTabPage(),
 
@@ -53,8 +57,12 @@ class _MainScreenState extends State<MainScreen>
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.my_library_books),
             label: "My Delivries",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trip_origin),
+            label: "Feed",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star),

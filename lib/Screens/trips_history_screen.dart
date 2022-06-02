@@ -24,12 +24,7 @@ class _TripsHistoryScreenState extends State<TripsHistoryScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text("Trips History"),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            SystemNavigator.pop();
-          },
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: Provider.of<AppInfo>(context, listen: false)
               .allTripsHistoryInformationList

@@ -15,7 +15,7 @@ import 'package:my_app/assistants/assistant_methods.dart';
 import 'package:my_app/models/delivery.dart';
 import 'package:my_app/push_notfications/push_notfications_syystem.dart';
 import '../../assistants/black_theme.dart';
-import '../../authentication/global.dart';
+import '../../assistants/global.dart';
 import '../../models/courier.dart';
 
 class HomeTabPage extends StatefulWidget {

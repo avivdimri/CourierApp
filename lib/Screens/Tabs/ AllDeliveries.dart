@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/Screens/Tabs/detailsDeliveryPage.dart';
-import 'package:my_app/authentication/global.dart';
+import 'package:my_app/assistants/global.dart';
 
 import '../../models/delivery.dart';
 
@@ -36,7 +36,6 @@ class _AllDeliveriesState extends State<AllDeliveries> {
         deliveries = filteredDeliveries = data;
       });
     });
-
     super.initState();
   }
 

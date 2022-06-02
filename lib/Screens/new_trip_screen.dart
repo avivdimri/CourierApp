@@ -4,7 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_app/Screens/Tabs/homeTab.dart';
-import 'package:my_app/authentication/global.dart';
+import 'package:my_app/assistants/global.dart';
 import 'package:my_app/models/delivery.dart';
 
 import '../assistants/assistant_methods.dart';
@@ -433,10 +433,11 @@ class _NewTripScreenState extends State<NewTripScreen> {
                               "arrived", widget.deliveryDetails!);
                           streamSubscriptionCourierLivePosition!.cancel();
                           AssistantMethods.resumeLiveLocationUpdates();
-                          Navigator.push(
+                          Navigator.of(context).pop();
+                          /*Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomeTabPage()));
+                                  builder: (context) => const HomeTabPage()));*/
                         }
                       },
                       style: ElevatedButton.styleFrom(

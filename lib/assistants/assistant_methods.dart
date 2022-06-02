@@ -7,13 +7,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_app/assistants/request_assistant.dart';
-import 'package:my_app/authentication/global.dart';
+import 'package:my_app/assistants/global.dart';
 import 'package:my_app/models/delivery.dart';
 import 'package:provider/provider.dart';
 
 import '../infoHandler/app_info.dart';
 import '../models/direction_details_info.dart';
 import '../models/directions.dart';
+
+import 'package:http/http.dart' as http;
 
 class AssistantMethods {
   static Future<String> searchAddressForGeographicCoOrdinates(
@@ -22,7 +24,7 @@ class AssistantMethods {
         "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$google_key";
     String humanReadableAddress = "";
 
-    var requestResponse = await RequestAssistant.receiveRequest(apiUrl);
+    var requestResponse = await receiveRequest(apiUrl);
 
     if (requestResponse != "Error Occurred, Failed. No Response.") {
       humanReadableAddress = requestResponse["results"][0]["formatted_address"];
@@ -45,8 +47,8 @@ class AssistantMethods {
     String urlOriginToDestinationDirectionDetails =
         "https://maps.googleapis.com/maps/api/directions/json?origin=${origionPosition.latitude},${origionPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$google_key";
 
-    var responseDirectionApi = await RequestAssistant.receiveRequest(
-        urlOriginToDestinationDirectionDetails);
+    var responseDirectionApi =
+        await receiveRequest(urlOriginToDestinationDirectionDetails);
 
     if (responseDirectionApi == "Error Occurred, Failed. No Response.") {
       return null;
@@ -105,6 +107,25 @@ class AssistantMethods {
         Provider.of<AppInfo>(context, listen: false)
             .updateOverAllTripsHistoryInformation(delivery);
       }
+    }
+  }
+
+  static Future<dynamic> receiveRequest(String url) async {
+    http.Response httpResponse = await http.get(Uri.parse(url));
+
+    try {
+      if (httpResponse.statusCode == 200) //successful
+      {
+        String responseData = httpResponse.body; //json
+
+        var decodeResponseData = jsonDecode(responseData);
+
+        return decodeResponseData;
+      } else {
+        return "Error Occurred, Failed. No Response.";
+      }
+    } catch (exp) {
+      return "Error Occurred, Failed. No Response.";
     }
   }
 }
