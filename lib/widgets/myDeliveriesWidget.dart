@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:my_app/models/delivery.dart';
-
 import '../Screens/Tabs/homeTab.dart';
-import '../Screens/new_trip_screen.dart';
-import '../assistants/assistant_methods.dart';
+import '../Screens/tripScreen.dart';
+import '../globalUtils/utils.dart';
+import '../globalUtils/global.dart';
+import '../push_notfications/localNotificationSystem.dart';
 
 class MyDeliveriesWidget extends StatefulWidget {
   Delivery? delivery;
+  int? id;
 
-  MyDeliveriesWidget({this.delivery});
+  MyDeliveriesWidget({this.delivery, this.id});
 
   @override
   State<MyDeliveriesWidget> createState() => _MyDeliveriesWidgetState();
@@ -41,9 +44,9 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 const SizedBox(
                   width: 12,
                 ),
-                Text(
-                  "comapny : Pizza Hut", //widget.tripsHistory!.company_id,
-                  style: const TextStyle(
+                const Text(
+                  "Pizza Hut", //widget.tripsHistory!.company_id,
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -52,18 +55,21 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
             ),
 
             const SizedBox(
-              height: 8,
+              height: 12,
             ),
 
             Row(
               children: [
+                const SizedBox(
+                  width: 10,
+                ),
                 const Icon(
                   Icons.phone_android_rounded,
                   color: Colors.black,
                   size: 28,
                 ),
                 const SizedBox(
-                  width: 12,
+                  width: 20,
                 ),
                 Text(
                   widget.delivery!.src_contact.phone,
@@ -85,7 +91,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 Image.asset(
                   "images/origin.png",
                   height: 26,
-                  width: 26,
+                  width: 46,
                 ),
                 const SizedBox(
                   width: 12,
@@ -114,7 +120,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 Image.asset(
                   "images/destination.png",
                   height: 24,
-                  width: 24,
+                  width: 46,
                 ),
                 const SizedBox(
                   width: 12,
@@ -137,13 +143,14 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
               height: 14,
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                     onPressed: (() {
                       startTrip(context);
                     }),
                     style: ElevatedButton.styleFrom(
-                      primary: Color.fromARGB(255, 1, 14, 61),
+                      primary: const Color.fromARGB(255, 1, 14, 61),
                     ),
                     child: const Text(
                       "Start Trip",
@@ -153,8 +160,16 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                       ),
                     )),
                 const SizedBox(
-                  width: 12,
+                  width: 38,
                 ),
+                Text(
+                  "ID: " +
+                      widget.id.toString(), //widget.tripsHistory!.company_id,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
               ],
             ),
 
@@ -163,12 +178,19 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(""),
-                Text(
-                  widget.delivery!.timing,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
+                widget.delivery!.deadline != null
+                    ? Text(
+                        widget.delivery!.deadline!,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                      )
+                    : const Text(
+                        "express",
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
               ],
             ),
 
@@ -182,13 +204,28 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
   }
 
   startTrip(BuildContext context) async {
+    if (!isCourierActive) {
+      Fluttertoast.showToast(
+          msg: "Please strart your shift in the Home tab before starting trip");
+      return;
+    }
     updateCourierStatus("busy");
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    DateTime dateTime = dateFormat.parse(widget.delivery!.deadline!);
+    DateTime futureNotificationTime = DateTime.now().add(Duration(minutes: 1));
+    //print("the diff is : " + futureNotificationTime.toString());
+    //print("the diff is : " + dateTime.toString());
+    if (futureNotificationTime.isBefore(dateTime)) {
+      print("cancel future notification!!!!");
+      LocalNotificationSystem.cancel(identityHashCode(widget.delivery!.id));
+    }
+    updateDeliveryStatus("on the way", widget.delivery!);
 
-    AssistantMethods.pauseLiveLocationUpdates();
+    Utils.pauseLiveLocationUpdates();
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                NewTripScreen(deliveryDetails: widget.delivery)));
+                TripScreen(deliveryDetails: widget.delivery)));
   }
 }

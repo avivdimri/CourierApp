@@ -1,21 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/infoHandler/app_info.dart';
+import 'package:my_app/globalUtils/allDeliveriesInfo.dart';
 import 'package:provider/provider.dart';
-//import 'Screens/ AllDeliveries.dart';
-import 'Screens/splashScreen.dart';
+import 'Screens/enterScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(
     MyApp(
       child: ChangeNotifierProvider(
-        create: (context) => AppInfo(),
+        create: (context) => AllDeliveriesInfo(),
         child: MaterialApp(
           title: 'Couriers App',
           theme: ThemeData(primarySwatch: Colors.blue),
-          home: const MySplashScreen(),
+          home: const EnterScreen(),
           debugShowCheckedModeBanner: false,
         ),
       ),

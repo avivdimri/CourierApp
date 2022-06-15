@@ -1,26 +1,22 @@
-import 'dart:convert';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:my_app/Screens/new_trip_screen.dart';
-import 'package:my_app/assistants/assistant_methods.dart';
-import 'package:my_app/assistants/global.dart';
+import 'package:my_app/Screens/tripScreen.dart';
+import 'package:my_app/globalUtils/utils.dart';
+import 'package:my_app/globalUtils/global.dart';
 import 'package:my_app/models/delivery.dart';
 
 import '../Screens/Tabs/homeTab.dart';
 
-class NotificationDialogBox extends StatefulWidget {
+class NotificationBox extends StatefulWidget {
   Delivery? deliveryDetails;
-  NotificationDialogBox({this.deliveryDetails});
+  NotificationBox({this.deliveryDetails});
 
   @override
-  State<NotificationDialogBox> createState() => _NotificationDialogBoxState();
+  State<NotificationBox> createState() => _NotificationBoxState();
 }
 
-class _NotificationDialogBoxState extends State<NotificationDialogBox> {
+class _NotificationBoxState extends State<NotificationBox> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -28,7 +24,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
       backgroundColor: Colors.transparent,
       elevation: 2,
       child: Container(
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(4),
         width: double.infinity,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: Colors.white),
@@ -37,7 +33,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
             height: 14,
           ),
           Image.asset(
-            "images/22kf_im3i_200729.png",
+            "images/22kf_im3i_200729.jpg",
             width: 160,
           ),
           const SizedBox(
@@ -47,7 +43,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
             "New Delivery Request",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
+              fontSize: 16,
             ),
           ),
           const SizedBox(
@@ -59,7 +55,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
           ),
           //adrdesses
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               children: [
                 // source
@@ -78,7 +74,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                         child: Text(
                           widget.deliveryDetails!.src_address,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -105,7 +101,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                         child: Text(
                           widget.deliveryDetails!.dest_address,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 13,
                           ),
                         ),
                       ),
@@ -135,18 +131,11 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                       audioPlayer = AssetsAudioPlayer();
                       Fluttertoast.showToast(
                           msg: "the delivery request has been declined");
-                      //send decline to the notfication
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeTabPage()));
-                      /*Future.delayed(const Duration(milliseconds: 2000), () {
-                        SystemNavigator.pop();
-                      });*/
+                      Navigator.pop(context);
                     },
-                    child: Text(
-                      "Decline".toUpperCase(),
-                      style: const TextStyle(
+                    child: const Text(
+                      "DECLINE",
+                      style: TextStyle(
                         fontSize: 14.0,
                       ),
                     )),
@@ -163,9 +152,9 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
                       audioPlayer = AssetsAudioPlayer();
                       acceptDeliverRequest(context);
                     },
-                    child: Text(
-                      "Accept".toUpperCase(),
-                      style: const TextStyle(
+                    child: const Text(
+                      "ACCEPT",
+                      style: TextStyle(
                         fontSize: 14.0,
                       ),
                     ))
@@ -178,16 +167,16 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox> {
   }
 
   acceptDeliverRequest(BuildContext context) async {
-    //change deliver status in server
-    updateDeliveryStatus("assigned", widget.deliveryDetails!);
+    updateDeliveryStatus("on the way", widget.deliveryDetails!);
     //add order to courier's history
     updateCourierStatus("busy");
+    Navigator.pop(context);
 
-    AssistantMethods.pauseLiveLocationUpdates();
+    Utils.pauseLiveLocationUpdates();
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                NewTripScreen(deliveryDetails: widget.deliveryDetails)));
+                TripScreen(deliveryDetails: widget.deliveryDetails)));
   }
 }

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class TextFieldWidget extends StatefulWidget {
   final String label;
   final String text;
-  final ValueChanged<String> onChanged;
+  TextEditingController controller;
 
   TextFieldWidget({
     Key? key,
     required this.label,
     required this.text,
-    required this.onChanged,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -17,19 +17,9 @@ class TextFieldWidget extends StatefulWidget {
 }
 
 class _TextFieldWidgetState extends State<TextFieldWidget> {
-  late final TextEditingController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = TextEditingController(text: widget.text);
-  }
-
   @override
   void dispose() {
-    controller.dispose();
-
+    widget.controller.dispose();
     super.dispose();
   }
 
@@ -39,21 +29,29 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
         children: [
           Text(
             widget.label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-          TextField(
-            style: const TextStyle(
-              fontSize: 20.0,
-              color: Colors.black,
-            ),
-            controller: controller,
-            decoration: const InputDecoration(
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+          const SizedBox(height: 8),
+          Container(
+            child: TextField(
+              style: const TextStyle(
+                fontSize: 18.0,
+                color: Colors.black,
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
+              controller: widget.controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+              /*decoration: const InputDecoration(
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+              ),*/
             ),
           ),
         ],

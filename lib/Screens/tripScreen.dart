@@ -4,22 +4,21 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_app/Screens/Tabs/homeTab.dart';
-import 'package:my_app/assistants/global.dart';
+import 'package:my_app/globalUtils/global.dart';
 import 'package:my_app/models/delivery.dart';
-
-import '../assistants/assistant_methods.dart';
-import '../assistants/black_theme.dart';
+import '../globalUtils/googleMapsTheme.dart';
+import '../globalUtils/utils.dart';
 import '../widgets/progressDialog.dart';
 
-class NewTripScreen extends StatefulWidget {
+class TripScreen extends StatefulWidget {
   Delivery? deliveryDetails;
-  NewTripScreen({this.deliveryDetails});
+  TripScreen({this.deliveryDetails});
 
   @override
-  State<NewTripScreen> createState() => _NewTripScreenState();
+  State<TripScreen> createState() => _TripScreenState();
 }
 
-class _NewTripScreenState extends State<NewTripScreen> {
+class _TripScreenState extends State<TripScreen> {
   GoogleMapController? newTripGoogleMapController;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -47,18 +46,17 @@ class _NewTripScreenState extends State<NewTripScreen> {
       LatLng originLatLng, LatLng destinationLatLng) async {
     showDialog(
       context: context,
-      builder: (BuildContext context) => ProgressDialog(
+      builder: (BuildContext context) => ProgressBox(
         message: "Please wait...",
       ),
     );
 
     var directionDetailsInfo =
-        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+        await Utils.obtainOriginToDestinationDirectionDetails(
             originLatLng, destinationLatLng);
 
     Navigator.pop(context);
 
-    print("These are points = ");
     print(directionDetailsInfo!.e_points);
 
     PolylinePoints pPoints = PolylinePoints();
@@ -179,15 +177,17 @@ class _NewTripScreenState extends State<NewTripScreen> {
         icon: iconMarker!,
         infoWindow: const InfoWindow(title: "This is your location"),
       );
-      setState(() {
-        CameraPosition cameraPosition =
-            CameraPosition(target: latLngOnline, zoom: 16);
-        newTripGoogleMapController!
-            .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-        setOfMarkers.removeWhere(
-            (element) => element.markerId.value == "AnimatedMarker");
-        setOfMarkers.add(marker);
-      });
+      if (mounted) {
+        setState(() {
+          CameraPosition cameraPosition =
+              CameraPosition(target: latLngOnline, zoom: 16);
+          newTripGoogleMapController!
+              .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+          setOfMarkers.removeWhere(
+              (element) => element.markerId.value == "AnimatedMarker");
+          setOfMarkers.add(marker);
+        });
+      }
       oldLatLng = latLngOnline;
       updateDurationTimeAtRT();
     });
@@ -209,13 +209,14 @@ class _NewTripScreenState extends State<NewTripScreen> {
         destLatLng = LatLng(double.parse(widget.deliveryDetails!.dest.lat),
             double.parse(widget.deliveryDetails!.dest.long));
       }
-      var directionInfo =
-          await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-              originLatLng, destLatLng);
+      var directionInfo = await Utils.obtainOriginToDestinationDirectionDetails(
+          originLatLng, destLatLng);
       if (directionInfo != null) {
-        setState(() {
-          durationOrgToDest = directionInfo.duration_text!;
-        });
+        if (mounted) {
+          setState(() {
+            durationOrgToDest = directionInfo.duration_text!;
+          });
+        }
       }
       isRequestDetails = false;
     }
@@ -399,12 +400,11 @@ class _NewTripScreenState extends State<NewTripScreen> {
                             buttonTitle = "Start Trip";
                             buttonColor = Colors.blueAccent;
                           });
-                          // change stauts of the order in DB
 
                           showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (BuildContext b) => ProgressDialog(
+                              builder: (BuildContext b) => ProgressBox(
                                     message: "Loading...",
                                   ));
 
@@ -425,6 +425,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
                             buttonTitle = "End Trip";
                             buttonColor = Colors.redAccent;
                           });
+
                           updateDeliveryStatus(
                               "collected", widget.deliveryDetails!);
                         } else if (deliveryStatus == "ontrip") {
@@ -432,12 +433,9 @@ class _NewTripScreenState extends State<NewTripScreen> {
                           updateDeliveryStatus(
                               "arrived", widget.deliveryDetails!);
                           streamSubscriptionCourierLivePosition!.cancel();
-                          AssistantMethods.resumeLiveLocationUpdates();
+                          Utils.resumeLiveLocationUpdates();
+                          updateCourierStatus("idle");
                           Navigator.of(context).pop();
-                          /*Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomeTabPage()));*/
                         }
                       },
                       style: ElevatedButton.styleFrom(

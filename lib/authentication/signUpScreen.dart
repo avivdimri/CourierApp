@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:my_app/Screens/splashScreen.dart';
-import 'package:my_app/assistants/global.dart';
+import 'package:my_app/Screens/enterScreen.dart';
+import 'package:my_app/globalUtils/global.dart';
 import 'package:my_app/authentication/loginScreen.dart';
 import 'package:my_app/models/courier.dart';
 import 'package:my_app/widgets/progressDialog.dart';
@@ -36,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Fluttertoast.showToast(msg: "Email address is not valid.");
     } else if (passwordTextEditingController.text.length < 6) {
       Fluttertoast.showToast(msg: "Password must be atleast 6 characters.");
-    } else if (selectdVehicleType == Null) {
+    } else if (selectdVehicleType == null) {
       Fluttertoast.showToast(msg: "vehicle tepe must be choosen");
     } else {
       saveCourierInfo();
@@ -48,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext c) {
-          return ProgressDialog(
+          return ProgressBox(
             message: "Processing, please wait...",
           );
         });
@@ -64,18 +64,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       response = await dio.post(basicUri + 'api/register', data: jsonData);
     } catch (onError) {
-      Navigator.pop(context);
+      print("error !!!! saveCourierInfo function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
+      Navigator.pop(context);
     }
     var data = response!.data;
     if (data == "The registerion of user is completed successfuly!") {
       Fluttertoast.showToast(
           msg: "Acocount has created.", timeInSecForIosWeb: 3);
     } else {
+      print("error !!!! saveCourierInfo 222 function  ");
       Fluttertoast.showToast(msg: "Error. " + data, timeInSecForIosWeb: 3);
     }
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const MySplashScreen())));
+        MaterialPageRoute(builder: ((context) => const EnterScreen())));
   }
 
   @override

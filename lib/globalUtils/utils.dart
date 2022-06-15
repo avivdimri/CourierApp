@@ -1,46 +1,18 @@
 import 'dart:convert';
-
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:my_app/assistants/request_assistant.dart';
-import 'package:my_app/assistants/global.dart';
+
 import 'package:my_app/models/delivery.dart';
 import 'package:provider/provider.dart';
 
-import '../infoHandler/app_info.dart';
-import '../models/direction_details_info.dart';
-import '../models/directions.dart';
+import '../globalUtils/global.dart';
+import 'allDeliveriesInfo.dart';
+import '../models/directionDetailsInfo.dart';
 
 import 'package:http/http.dart' as http;
 
-class AssistantMethods {
-  static Future<String> searchAddressForGeographicCoOrdinates(
-      Position position, context) async {
-    String apiUrl =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$google_key";
-    String humanReadableAddress = "";
-
-    var requestResponse = await receiveRequest(apiUrl);
-
-    if (requestResponse != "Error Occurred, Failed. No Response.") {
-      humanReadableAddress = requestResponse["results"][0]["formatted_address"];
-
-      Directions userPickUpAddress = Directions();
-      userPickUpAddress.locationLatitude = position.latitude;
-      userPickUpAddress.locationLongitude = position.longitude;
-      userPickUpAddress.locationName = humanReadableAddress;
-
-      Provider.of<AppInfo>(context, listen: false)
-          .updatePickUpLocationAddress(userPickUpAddress);
-    }
-
-    return humanReadableAddress;
-  }
-
+class Utils {
   static Future<DirectionDetailsInfo?>
       obtainOriginToDestinationDirectionDetails(
           LatLng origionPosition, LatLng destinationPosition) async {
@@ -82,44 +54,50 @@ class AssistantMethods {
         courierCurrentPosition!.longitude);
   }
 
-  static void readTripsKeysForOnlineCourier(context) async {
+  static Future<void> updateDeliveriesForOnlineCourier(context) async {
     // get all orders of current corier
+
     List<Delivery> deliveries = [];
     var response;
     try {
-      response = await dio.get(basicUri, queryParameters: {'id': userId});
+      response = await dio
+          .get(basicUri + 'getAllDeliveries', queryParameters: {'id': userId});
     } catch (onError) {
-      Navigator.pop(context);
+      print("catch error readTripsKeysForOnlineCourier function");
+      print("the error is " + onError.toString());
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
-    var jsonList = response.data;
-    var data = json.decode(jsonList);
-    print(" the delivries are " + data.toString());
-    var map = data.map<Delivery>((json) => Delivery.fromJson(json));
-    deliveries = map.toList();
-
-    int overAllTripsCounter = map.length;
-    Provider.of<AppInfo>(context, listen: false)
-        .updateOverAllTripsCounter(overAllTripsCounter);
-
-    for (Delivery delivery in deliveries) {
-      if (delivery.status == "arrived") {
-        Provider.of<AppInfo>(context, listen: false)
-            .updateOverAllTripsHistoryInformation(delivery);
+    if (response != null) {
+      var jsonList = response.data;
+      var data = json.decode(jsonList);
+      var map = data.map<Delivery>((json) => Delivery.fromJson(json));
+      deliveries = map.toList();
+      Provider.of<AllDeliveriesInfo>(context, listen: false)
+          .clearDeliveriesLists();
+      for (Delivery delivery in deliveries) {
+        if ((delivery.status == "arrived") && (delivery.courier_id == userId)) {
+          Provider.of<AllDeliveriesInfo>(context, listen: false)
+              .updateHistoryDeliveriesList(delivery);
+        } else if (delivery.status == "pending") {
+          Provider.of<AllDeliveriesInfo>(context, listen: false)
+              .updateFeedDeliveriesList(delivery);
+        } else if ((delivery.status == "assigned") &&
+            (delivery.courier_id == userId)) {
+          Provider.of<AllDeliveriesInfo>(context, listen: false)
+              .updateMyDeliveriesList(delivery);
+        }
       }
     }
   }
 
   static Future<dynamic> receiveRequest(String url) async {
     http.Response httpResponse = await http.get(Uri.parse(url));
-
     try {
       if (httpResponse.statusCode == 200) //successful
       {
         String responseData = httpResponse.body; //json
 
         var decodeResponseData = jsonDecode(responseData);
-
         return decodeResponseData;
       } else {
         return "Error Occurred, Failed. No Response.";

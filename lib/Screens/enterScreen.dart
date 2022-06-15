@@ -1,21 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:my_app/Screens/mainScreen.dart';
+import 'package:my_app/Screens/mainTabsScreen.dart';
 import 'package:my_app/authentication/loginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../globalUtils/global.dart';
 
-import '../assistants/global.dart';
-
-class MySplashScreen extends StatefulWidget {
-  const MySplashScreen({Key? key}) : super(key: key);
+class EnterScreen extends StatefulWidget {
+  const EnterScreen({Key? key}) : super(key: key);
 
   @override
-  State<MySplashScreen> createState() => _MySplashScreenState();
+  State<EnterScreen> createState() => _EnterScreenState();
 }
 
-class _MySplashScreenState extends State<MySplashScreen> {
+class _EnterScreenState extends State<EnterScreen> {
   startTimer() {
     Timer(const Duration(seconds: 2), () async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,7 +27,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
         });
       }
       if (Platform.isAndroid) {
-        basicUri = "https://deliverysystemmanagement.herokuapp.com/";
+        basicUri = "http://10.0.0.47:3000/";
       } else if (Platform.isIOS) {
         basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       }
@@ -41,8 +39,6 @@ class _MySplashScreenState extends State<MySplashScreen> {
         Navigator.push(
             context, MaterialPageRoute(builder: (c) => const MainScreen()));
       }
-
-      //send user to home screen
     });
   }
 

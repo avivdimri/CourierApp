@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -11,12 +10,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:h3_flutter/h3_flutter.dart';
-import 'package:my_app/assistants/assistant_methods.dart';
+import 'package:my_app/globalUtils/utils.dart';
 import 'package:my_app/models/delivery.dart';
-import 'package:my_app/push_notfications/push_notfications_syystem.dart';
-import '../../assistants/black_theme.dart';
-import '../../assistants/global.dart';
+import 'package:my_app/push_notfications/pushNotficationsSystem.dart';
+import 'package:provider/provider.dart';
+import '../../globalUtils/global.dart';
+import '../../globalUtils/allDeliveriesInfo.dart';
+import '../../globalUtils/googleMapsTheme.dart';
 import '../../models/courier.dart';
+import 'package:http/http.dart' as http;
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
@@ -56,30 +58,23 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 14);
-
-    newGoogleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
-    //String humanReadableAddress =
-    //  await AssistantMethods.searchAddressForGeographicCoOrdinates(
-    //    courierCurrentPosition!, context);
-    //print("this is your address = " + humanReadableAddress);
+    if (mounted) {
+      newGoogleMapController!
+          .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    }
   }
 
   readCurrentCourierInfo() async {
     PushNotficationsSystem pushNotficationsSystem = PushNotficationsSystem();
     pushNotficationsSystem.initCloudMessaging(context);
     pushNotficationsSystem.generateToken();
-    AssistantMethods.readTripsKeysForOnlineCourier(context);
-    getCourierInfo();
+    Utils.updateDeliveriesForOnlineCourier(context);
   }
 
   @override
   void initState() {
     super.initState();
-
     checkIfLocationPermissionAllowed();
-    readCurrentCourierInfo();
   }
 
   @override
@@ -93,8 +88,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
           onMapCreated: (GoogleMapController controller) {
             _controllerGoogleMap.complete(controller);
             newGoogleMapController = controller;
-
-            //black theme
             blackThemeGoogleMap(newGoogleMapController);
             locateDriverPosition();
           },
@@ -117,12 +110,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
               onPressed: () {
                 if (!isCourierActive) {
                   courierIsOnline();
-                  updateCourierLocationAtRT();
+
                   setState(() {
                     statusText = "Online";
                     isCourierActive = true;
                     buttonColor = Colors.transparent;
                   });
+                  updateCourierLocationAtRT();
                   Fluttertoast.showToast(msg: "you are online now");
                 } else {
                   courierIsOffline();
@@ -173,8 +167,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
     GeoCoord geoCoord = GeoCoord(
         lon: courierCurrentPosition!.longitude,
         lat: courierCurrentPosition!.latitude);
-    //var index = coordToIndex(courierCurrentPosition!.longitude,
-    // courierCurrentPosition!.latitude);
     var index = h3.geoToH3(geoCoord, 7);
     indexRef.child(userId).set(index.toRadixString(16));
     indexRef.child(userId).set(index);
@@ -206,34 +198,55 @@ class _HomeTabPageState extends State<HomeTabPage> {
         GeoCoord geoCoord = GeoCoord(
             lon: courierCurrentPosition!.longitude,
             lat: courierCurrentPosition!.latitude);
-        //var index = coordToIndex(courierCurrentPosition!.longitude,
-        // courierCurrentPosition!.latitude);
         var index = h3.geoToH3(geoCoord, 7);
         indexRef.child(userId).set(index.toRadixString(16));
       }
+
       LatLng latLng = LatLng(
           courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
-      newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
+      if (mounted) {
+        newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
+      }
     });
   }
 
-  /*coordToIndex(longitude, latitude) {
-    print("the latlong is" + longitude.toString() + " " + latitude.toString());
-    GeoCoord geoCoord = GeoCoord(lon: longitude, lat: latitude);
-    return h3.geoToH3(geoCoord, 7);
-  }*/
+  Future<void> getDeliveries() async {
+    final uri = Uri.https("deliverysystemmanagement.herokuapp.com",
+        '/getAllDeliveries', {'id': userId});
+    http.Response httpResponse = await http.get(uri);
+
+    try {
+      if (httpResponse.statusCode == 200) //successful
+      {
+        String responseData = httpResponse.body; //json
+        var decodeResponseData = jsonDecode(responseData);
+        var map =
+            decodeResponseData.map<Delivery>((json) => Delivery.fromJson(json));
+        setState(() {
+          // globalDeliveries = map.toList();
+        });
+      } else {
+        print("Error Occurred, Failed. No Response.");
+      }
+    } catch (exp) {
+      print("Error Occurred in catch, Failed. No Response.");
+    }
+  }
 
   Future<void> getCourierInfo() async {
+    var response;
     try {
-      var response = await dio.get(basicUri + 'get_courier/$userId');
+      response = await dio.get(basicUri + 'get_courier/$userId');
+    } catch (onError) {
+      print("error !!!! getCourierInfo function  ");
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+      // Navigator.pop(context);
+    }
+    if (response != null) {
       var jsonList = response.data;
       var data = json.decode(jsonList);
-      setState(() {
-        courierInfo = Courier.fromJson(data);
-      });
-    } catch (onError) {
-      Navigator.pop(context);
-      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+      Provider.of<AllDeliveriesInfo>(context, listen: false)
+          .updateCourierInfo(Courier.fromJson(data));
     }
   }
 }
@@ -249,12 +262,13 @@ void updateCourierStatus(String status) async {
     );
 
     print('User updated: ${response.data}');
-  } catch (e) {
-    print('Error updating user: $e');
+  } catch (onerror) {
+    print('Error updateCourierStatus function updating user: ' +
+        onerror.toString());
   }
 }
 
-void updateDeliveryStatus(String status, Delivery delivery) async {
+Future<void> updateDeliveryStatus(String status, Delivery delivery) async {
   var deliveryId = delivery.id;
   var json = jsonEncode(<String, String>{
     'status': status,
@@ -267,6 +281,6 @@ void updateDeliveryStatus(String status, Delivery delivery) async {
     );
     print('User updated: ${response.data}');
   } catch (e) {
-    print('Error updating user: $e');
+    print('Error updateDeliveryStatus function  updating user: $e');
   }
 }

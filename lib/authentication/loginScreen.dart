@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:my_app/assistants/global.dart';
+import 'package:my_app/globalUtils/global.dart';
 import 'package:my_app/authentication/signUpScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Screens/splashScreen.dart';
+import '../Screens/enterScreen.dart';
 import '../widgets/progressDialog.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext c) {
-          return ProgressDialog(
+          return ProgressBox(
             message: "Loging in, please wait...",
           );
         });
@@ -48,12 +48,13 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       response = await dio.post(basicUri + 'api/login_courier', data: json);
     } catch (onError) {
-      Navigator.pop(context);
+      print("error !!!! loginCourier function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
+      Navigator.pop(context);
     }
     if (response != null) {
       if (response.data == "wrong username or password") {
-        //print("wrong username or password");
+        print("wrong username or password");
         Fluttertoast.showToast(msg: "Error: wrong username or password");
         Navigator.pop(context);
       } else {
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Fluttertoast.showToast(
             msg: "Sign in successfully.", timeInSecForIosWeb: 3);
         Navigator.push(context,
-            MaterialPageRoute(builder: ((context) => const MySplashScreen())));
+            MaterialPageRoute(builder: ((context) => const EnterScreen())));
       }
     } else {
       Fluttertoast.showToast(msg: "Sign in failed.");

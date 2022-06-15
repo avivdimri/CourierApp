@@ -1,15 +1,12 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:my_app/Screens/Tabs/editProfilePage.dart';
-import 'package:my_app/models/courier.dart';
+import 'package:my_app/Screens/editProfileScreen.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../assistants/global.dart';
-import '../splashScreen.dart';
+import '../../globalUtils/global.dart';
+import '../../globalUtils/allDeliveriesInfo.dart';
+import '../enterScreen.dart';
 
 class ProfileTabPage extends StatefulWidget {
   const ProfileTabPage({Key? key}) : super(key: key);
@@ -19,11 +16,6 @@ class ProfileTabPage extends StatefulWidget {
 }
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,11 +28,17 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 60.0),
+                  padding: const EdgeInsets.only(left: 50.0),
                   child: Text(
-                    courierInfo!.first_name + " " + courierInfo!.last_name,
+                    Provider.of<AllDeliveriesInfo>(context, listen: false)
+                            .courierInfo
+                            .first_name +
+                        " " +
+                        Provider.of<AllDeliveriesInfo>(context, listen: false)
+                            .courierInfo
+                            .last_name,
                     style: const TextStyle(
-                      fontSize: 50.0,
+                      fontSize: 26.0,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -53,7 +51,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => EditProfilePage()),
+                          builder: (context) => EditProfileScreen()),
                     );
                     //SystemNavigator.pop();
                   },
@@ -65,7 +63,10 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
               ],
             ),
             Text(
-              courierInfo!.company_id.toString(),
+              Provider.of<AllDeliveriesInfo>(context, listen: false)
+                  .courierInfo
+                  .company_id
+                  .toString(),
               style: const TextStyle(
                 fontSize: 18.0,
                 color: Colors.grey,
@@ -88,9 +89,21 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             ),
 
             //phone
-            buildInfoCard(courierInfo!.phone_number, Icons.phone_android),
-            buildInfoCard(courierInfo!.email, Icons.email),
-            buildInfoCard(courierInfo!.VehicleType, Icons.car_repair),
+            buildInfoCard(
+                Provider.of<AllDeliveriesInfo>(context, listen: true)
+                    .courierInfo
+                    .phone_number,
+                Icons.phone_android),
+            buildInfoCard(
+                Provider.of<AllDeliveriesInfo>(context, listen: true)
+                    .courierInfo
+                    .email,
+                Icons.email),
+            buildInfoCard(
+                Provider.of<AllDeliveriesInfo>(context, listen: true)
+                    .courierInfo
+                    .VehicleType,
+                Icons.car_repair),
 
             const SizedBox(
               height: 32,
@@ -178,20 +191,6 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
     Fluttertoast.showToast(
         msg: "Sign out successfully.", timeInSecForIosWeb: 2);
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const MySplashScreen())));
+        MaterialPageRoute(builder: ((context) => const EnterScreen())));
   }
-
-  /*Future<void> getCourierInfo() async {
-    try {
-      var response = await dio.get(basicUri + 'get_courier/$userId');
-      var jsonList = response.data;
-      var data = json.decode(jsonList);
-      setState(() {
-        courierInfo = Courier.fromJson(data);
-      });
-    } catch (onError) {
-      Navigator.pop(context);
-      Fluttertoast.showToast(msg: "Error: " + onError.toString());
-    }
-  }*/
 }

@@ -43,7 +43,11 @@ dependencies:
   firebase_messaging: ^11.2.15
   assets_audio_player: ^3.0.4+1
   h3_flutter: ^0.4.2
-
+  onesignal_flutter: ^3.0.0
+  flutter_local_notifications: ^9.5.3+1
+  rxdart: ^0.27.1
+  intl: ^0.17.0
+  flutter_native_timezone: ^2.0.0
   
 
   # The following adds the Cupertino Icons font to your application.

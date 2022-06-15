@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../globalUtils/allDeliveriesInfo.dart';
+import '../../widgets/historyWidget.dart';
 
-import '../assistants/assistant_methods.dart';
-import '../infoHandler/app_info.dart';
-import '../widgets/historyWidget.dart';
-
-class TripsHistoryScreen extends StatefulWidget {
+class HistoryTab extends StatefulWidget {
   @override
-  State<TripsHistoryScreen> createState() => _TripsHistoryScreenState();
+  State<HistoryTab> createState() => _HistoryTabState();
 }
 
-class _TripsHistoryScreenState extends State<TripsHistoryScreen> {
+class _HistoryTabState extends State<HistoryTab> {
   @override
   void initState() {
     super.initState();
+    //AssistantMethods.updateDeliveriesForOnlineCourier(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(255, 1, 14, 61),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 1, 14, 61),
         title: const Text("Trips History"),
         automaticallyImplyLeading: false,
       ),
-      body: Provider.of<AppInfo>(context, listen: false)
-              .allTripsHistoryInformationList
+      body: Provider.of<AllDeliveriesInfo>(context, listen: false)
+              .historyDeliveries
               .isNotEmpty
           ? ListView.separated(
               separatorBuilder: (context, i) => const Divider(
@@ -39,20 +37,21 @@ class _TripsHistoryScreenState extends State<TripsHistoryScreen> {
                 return Card(
                   color: Colors.white54,
                   child: HistoryWidget(
-                    tripsHistory: Provider.of<AppInfo>(context, listen: false)
-                        .allTripsHistoryInformationList[i],
+                    tripsHistory:
+                        Provider.of<AllDeliveriesInfo>(context, listen: false)
+                            .historyDeliveries[i],
                   ),
                 );
               },
-              itemCount: Provider.of<AppInfo>(context, listen: false)
-                  .allTripsHistoryInformationList
+              itemCount: Provider.of<AllDeliveriesInfo>(context, listen: false)
+                  .historyDeliveries
                   .length,
               physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
             )
           : const Text(
               "No delivries in History",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
