@@ -46,7 +46,10 @@ class _MainScreenState extends State<MainScreen>
     listenNotifications();
     pushNotficationsSystem.generateToken();
     Utils.updateDeliveriesForOnlineCourier(context);
-    getCourierInfo();
+    Utils.getCourierInfo(context);
+    if (isCourierActive!) {
+      activeAfterKill = true;
+    }
   }
 
   void listenNotifications() => LocalNotificationSystem.onNotifications.stream
@@ -67,22 +70,6 @@ class _MainScreenState extends State<MainScreen>
                   ));
         }
       });
-  Future<void> getCourierInfo() async {
-    var response;
-    try {
-      response = await dio.get(basicUri + 'get_courier/$userId');
-    } catch (onError) {
-      print("error !!!! getCourierInfo function  ");
-      Fluttertoast.showToast(msg: "Error: " + onError.toString());
-      // Navigator.pop(context);
-    }
-    if (response != null) {
-      var jsonList = response.data;
-      var data = json.decode(jsonList);
-      Provider.of<AllDeliveriesInfo>(context, listen: false)
-          .updateCourierInfo(Courier.fromJson(data));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

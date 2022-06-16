@@ -4,55 +4,47 @@ import 'location.dart';
 
 class Delivery {
   String id;
-  ContactInfo src_contact;
-  ContactInfo dst_contact;
+  ContactInfo srcContact;
+  ContactInfo destContact;
   bool express;
-  String company_id;
+  String companyId;
   Location src;
-  String src_address;
+  String srcAddress;
   Location dest;
-  String dest_address;
+  String destAddress;
   String status;
-  String? courier_id;
+  String? courierId;
   String? deadline;
 
-  Delivery(
-      {required this.id,
-      required this.src_contact,
-      required this.dst_contact,
-      required this.express,
-      required this.company_id,
-      required this.src,
-      required this.src_address,
-      required this.dest,
-      required this.dest_address,
-      required this.status,
-      this.courier_id,
-      this.deadline});
+  Delivery({
+    required this.id,
+    required this.srcContact,
+    required this.destContact,
+    required this.express,
+    required this.companyId,
+    required this.src,
+    required this.srcAddress,
+    required this.dest,
+    required this.destAddress,
+    required this.status,
+    this.courierId,
+    this.deadline,
+  });
 
   factory Delivery.fromJson(Map<String, dynamic> json) {
     return Delivery(
-        id: json['_id'],
-        src_contact: ContactInfo.fromJson(json['src_contact']),
-        dst_contact: ContactInfo.fromJson(json['dst_contact']),
-        express: json['express'],
-        company_id: json['company_id'],
-        src: Location.fromJson(json['src']),
-        src_address: json['src_address'],
-        dest: Location.fromJson(json['dest']),
-        dest_address: json['dest_address'],
-        status: json['status'],
-        courier_id: json['courier_id'],
-        deadline: json['deadline']);
+      id: json['_id'],
+      srcContact: ContactInfo.fromJson(json['src_contact']),
+      destContact: ContactInfo.fromJson(json['dst_contact']),
+      express: json['express'],
+      companyId: json['company_id'],
+      src: Location.fromJson(json['src']),
+      srcAddress: json['src_address'],
+      dest: Location.fromJson(json['dest']),
+      destAddress: json['dest_address'],
+      status: json['status'],
+      courierId: json['courier_id'],
+      deadline: json['deadline'],
+    );
   }
-
-  Map<String, dynamic> toJson() => {
-        '_id': id,
-        'src_contact': src_contact,
-        'exress': express,
-        'company_id': company_id,
-        'src': src,
-        'dest': dest,
-        'status': status,
-      };
 }

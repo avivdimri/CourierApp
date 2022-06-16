@@ -74,6 +74,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
   @override
   void initState() {
     super.initState();
+    if (streamSubscriptionPosition == null && activeAfterKill) {
+      courierIsOnline();
+      updateCourierLocationAtRT();
+    }
     checkIfLocationPermissionAllowed();
   }
 
@@ -108,12 +112,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
               onPressed: () {
-                if (!isCourierActive) {
+                if (!isCourierActive!) {
                   courierIsOnline();
-
                   setState(() {
                     statusText = "Online";
                     isCourierActive = true;
+                    prefs.setString('isActive', "true");
                     buttonColor = Colors.transparent;
                   });
                   updateCourierLocationAtRT();
@@ -123,6 +127,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                   setState(() {
                     statusText = "Offline";
                     isCourierActive = false;
+                    prefs.setString('isActive', "false");
                     buttonColor = Colors.grey;
                   });
                   Fluttertoast.showToast(msg: "you are offline now");
@@ -179,7 +184,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   void courierIsOffline() async {
     FirebaseDatabase.instance.ref().child("indexes").remove();
-    Geofire.removeLocation(userId);
+    await Geofire.removeLocation(userId);
     updateCourierStatus("offline");
     Future.delayed(const Duration(milliseconds: 2000), () async {
       SystemNavigator.pop();
@@ -190,7 +195,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
     streamSubscriptionPosition =
         Geolocator.getPositionStream().listen((Position position) {
       courierCurrentPosition = position;
-      if (isCourierActive) {
+      if (isCourierActive!) {
         Geofire.setLocation(userId, courierCurrentPosition!.latitude,
             courierCurrentPosition!.longitude);
         DatabaseReference indexRef =
@@ -208,46 +213,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
         newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
       }
     });
-  }
-
-  Future<void> getDeliveries() async {
-    final uri = Uri.https("deliverysystemmanagement.herokuapp.com",
-        '/getAllDeliveries', {'id': userId});
-    http.Response httpResponse = await http.get(uri);
-
-    try {
-      if (httpResponse.statusCode == 200) //successful
-      {
-        String responseData = httpResponse.body; //json
-        var decodeResponseData = jsonDecode(responseData);
-        var map =
-            decodeResponseData.map<Delivery>((json) => Delivery.fromJson(json));
-        setState(() {
-          // globalDeliveries = map.toList();
-        });
-      } else {
-        print("Error Occurred, Failed. No Response.");
-      }
-    } catch (exp) {
-      print("Error Occurred in catch, Failed. No Response.");
-    }
-  }
-
-  Future<void> getCourierInfo() async {
-    var response;
-    try {
-      response = await dio.get(basicUri + 'get_courier/$userId');
-    } catch (onError) {
-      print("error !!!! getCourierInfo function  ");
-      Fluttertoast.showToast(msg: "Error: " + onError.toString());
-      // Navigator.pop(context);
-    }
-    if (response != null) {
-      var jsonList = response.data;
-      var data = json.decode(jsonList);
-      Provider.of<AllDeliveriesInfo>(context, listen: false)
-          .updateCourierInfo(Courier.fromJson(data));
-    }
   }
 }
 

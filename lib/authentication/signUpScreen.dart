@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -37,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else if (passwordTextEditingController.text.length < 6) {
       Fluttertoast.showToast(msg: "Password must be atleast 6 characters.");
     } else if (selectdVehicleType == null) {
-      Fluttertoast.showToast(msg: "vehicle tepe must be choosen");
+      Fluttertoast.showToast(msg: "vehicle type must be choosen.");
     } else {
       saveCourierInfo();
     }
@@ -53,12 +51,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           );
         });
     Courier courier = Courier(
-        first_name: firstNameTextEditingController.text.trim(),
-        last_name: lastNameTextEditingController.text.trim(),
+        firstName: firstNameTextEditingController.text.trim(),
+        lastName: lastNameTextEditingController.text.trim(),
         email: emailTextEditingController.text.trim(),
         password: passwordTextEditingController.text.trim(),
-        phone_number: phoneTextEditingController.text.trim(),
-        VehicleType: selectdVehicleType!);
+        phoneNumber: phoneTextEditingController.text.trim(),
+        vehicleType: selectdVehicleType!);
     Map<String, dynamic> jsonData = courier.toJson();
     Response? response;
     try {

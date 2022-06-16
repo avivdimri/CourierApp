@@ -16,9 +16,9 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
   @override
   void initState() {
     super.initState();
+    Utils.updateDeliveriesForOnlineCourier(context);
     filteredDeliveries =
         Provider.of<AllDeliveriesInfo>(context, listen: false).myDeliveries;
-    Utils.updateDeliveriesForOnlineCourier(context);
   }
 
   void _filterDeliveries(value) {
@@ -26,7 +26,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
       filteredDeliveries =
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .myDeliveries
-              .where((delivery) => delivery.src_contact.name
+              .where((delivery) => delivery.srcContact.name
                   .toLowerCase()
                   .contains(value.toLowerCase()))
               .toList();
@@ -59,7 +59,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
               ? IconButton(
                   onPressed: () {
                     setState(() {
-                      this.isSearching = false;
+                      isSearching = false;
                       filteredDeliveries =
                           Provider.of<AllDeliveriesInfo>(context, listen: false)
                               .myDeliveries;
@@ -70,17 +70,15 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
               : IconButton(
                   onPressed: () {
                     setState(() {
-                      this.isSearching = true;
+                      isSearching = true;
                     });
                   },
                   icon: const Icon(Icons.search),
                 )
         ],
-        //title: const Text("My Deliveries"),
         automaticallyImplyLeading: false,
       ),
       body: filteredDeliveries.isNotEmpty
-          //Provider.of<AppInfo>(context, listen: false).myDeliveries.isNotEmpty
           ? RefreshIndicator(
               onRefresh: () async {
                 setState(() {});
@@ -96,11 +94,16 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
                     color: Colors.white54,
                     child: Column(children: [
                       MyDeliveriesWidget(
-                        delivery: filteredDeliveries[i],
-                        //delivery: Provider.of<AppInfo>(context, listen: false)
-                        //  .myDeliveries[i],
-                        id: i + 1,
-                      ),
+                          delivery: filteredDeliveries[i],
+                          id: i + 1,
+                          callback: () async {
+                            setState(() {
+                              filteredDeliveries =
+                                  Provider.of<AllDeliveriesInfo>(context,
+                                          listen: false)
+                                      .myDeliveries;
+                            });
+                          }),
                     ]),
                   );
                 },

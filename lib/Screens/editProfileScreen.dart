@@ -30,18 +30,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     firstNameTextEditingController = TextEditingController(
         text: Provider.of<AllDeliveriesInfo>(context, listen: false)
             .courierInfo
-            .first_name);
+            .firstName);
     lastNameTextEditingController = TextEditingController(
         text: Provider.of<AllDeliveriesInfo>(context, listen: false)
             .courierInfo
-            .last_name);
+            .lastName);
     phoneNumberTextEditingController = TextEditingController(
         text: Provider.of<AllDeliveriesInfo>(context, listen: false)
             .courierInfo
-            .phone_number);
+            .phoneNumber);
     selectdVehicleType = Provider.of<AllDeliveriesInfo>(context, listen: false)
         .courierInfo
-        .VehicleType;
+        .vehicleType;
   }
 
   @override
@@ -137,17 +137,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       Fluttertoast.showToast(msg: "vehicle tepe must be choosen");
     } else {
       await updateCourierInfo();
-      get2CourierInfo();
+      getCourierInfo();
       Navigator.pop(context);
     }
   }
 
   Future<int> updateCourierInfo() async {
     var json = jsonEncode(<String, String>{
-      'first_name': firstNameTextEditingController.text.trim(),
-      'last_name': lastNameTextEditingController.text.trim(),
-      'phone_number': phoneNumberTextEditingController.text.trim(),
-      'Vehicle_type': selectdVehicleType!
+      'firstName': firstNameTextEditingController.text.trim(),
+      'lastName': lastNameTextEditingController.text.trim(),
+      'phoneNumber': phoneNumberTextEditingController.text.trim(),
+      'VehicleType': selectdVehicleType!
     });
     var response;
     try {
@@ -164,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> get2CourierInfo() async {
+  Future<void> getCourierInfo() async {
     var response;
     try {
       response = await dio.get(basicUri + 'get_courier/$userId');

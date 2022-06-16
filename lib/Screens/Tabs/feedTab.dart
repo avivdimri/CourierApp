@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../globalUtils/utils.dart';
 import '../../globalUtils/allDeliveriesInfo.dart';
+import '../../models/delivery.dart';
 
 class FeedTab extends StatefulWidget {
   @override
@@ -44,10 +45,12 @@ class _FeedTabState extends State<FeedTab> {
                     color: Colors.white54,
                     child: Column(children: [
                       FeedWidget(
-                        delivery: Provider.of<AllDeliveriesInfo>(context,
-                                listen: false)
-                            .feedDeliveries[i],
-                      ),
+                          delivery: Provider.of<AllDeliveriesInfo>(context,
+                                  listen: false)
+                              .feedDeliveries[i],
+                          callback: () async {
+                            setState(() {});
+                          }),
                     ]),
                   );
                 },

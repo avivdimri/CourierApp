@@ -19,15 +19,18 @@ class _EnterScreenState extends State<EnterScreen> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? username = prefs.getString('username');
       final String? id = prefs.getString('userId');
-      if (username != null && id != null) {
+      final String? isActive = prefs.getString('isActive');
+      if (username != null && id != null && isActive != null) {
         setState(() {
+          isCourierActive = (isActive == "false") ? false : true;
+          statusText = (isActive == "false") ? "Offline" : "Online";
           isLoggedIn = true;
           name = username;
           userId = id;
         });
       }
       if (Platform.isAndroid) {
-        basicUri = "http://10.0.0.47:3000/";
+        basicUri = "http://10.0.0.15:3000/";
       } else if (Platform.isIOS) {
         basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       }

@@ -11,8 +11,9 @@ import '../globalUtils/utils.dart';
 import '../widgets/progressDialog.dart';
 
 class TripScreen extends StatefulWidget {
-  Delivery? deliveryDetails;
-  TripScreen({this.deliveryDetails});
+  Delivery deliveryDetails;
+
+  TripScreen({required this.deliveryDetails});
 
   @override
   State<TripScreen> createState() => _TripScreenState();
@@ -28,6 +29,7 @@ class _TripScreenState extends State<TripScreen> {
 
   String buttonTitle = "Arrived";
   Color buttonColor = Colors.green;
+  String contactInfo = "";
 
   Set<Marker> setOfMarkers = Set<Marker>();
   Set<Circle> setOfCircle = Set<Circle>();
@@ -203,11 +205,11 @@ class _TripScreenState extends State<TripScreen> {
           courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
       LatLng destLatLng;
       if (deliveryStatus == "accepted") {
-        destLatLng = LatLng(double.parse(widget.deliveryDetails!.src.lat),
-            double.parse(widget.deliveryDetails!.src.long));
+        destLatLng = LatLng(double.parse(widget.deliveryDetails.src.lat),
+            double.parse(widget.deliveryDetails.src.long));
       } else {
-        destLatLng = LatLng(double.parse(widget.deliveryDetails!.dest.lat),
-            double.parse(widget.deliveryDetails!.dest.long));
+        destLatLng = LatLng(double.parse(widget.deliveryDetails.dest.lat),
+            double.parse(widget.deliveryDetails.dest.long));
       }
       var directionInfo = await Utils.obtainOriginToDestinationDirectionDetails(
           originLatLng, destLatLng);
@@ -220,6 +222,16 @@ class _TripScreenState extends State<TripScreen> {
       }
       isRequestDetails = false;
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    contactInfo = "   " +
+        widget.deliveryDetails.srcContact.name +
+        "   " +
+        widget.deliveryDetails.srcContact.phone;
   }
 
   @override
@@ -249,8 +261,8 @@ class _TripScreenState extends State<TripScreen> {
                   courierCurrentPosition!.longitude);
 
               var deliveryPickUpLatLng = LatLng(
-                  double.parse(widget.deliveryDetails!.src.lat),
-                  double.parse(widget.deliveryDetails!.src.long));
+                  double.parse(widget.deliveryDetails.src.lat),
+                  double.parse(widget.deliveryDetails.src.long));
 
               drawPolyLineFromOriginToDestination(
                   courierCurrentLatLng, deliveryPickUpLatLng);
@@ -312,10 +324,7 @@ class _TripScreenState extends State<TripScreen> {
                           ),
                         ),
                         Text(
-                          "   " +
-                              widget.deliveryDetails!.src_contact.name +
-                              "   " +
-                              widget.deliveryDetails!.src_contact.phone,
+                          contactInfo,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -341,7 +350,7 @@ class _TripScreenState extends State<TripScreen> {
                         Expanded(
                           child: Container(
                             child: Text(
-                              widget.deliveryDetails!.src_address,
+                              widget.deliveryDetails.srcAddress,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -368,7 +377,7 @@ class _TripScreenState extends State<TripScreen> {
                         Expanded(
                           child: Container(
                             child: Text(
-                              widget.deliveryDetails!.dest_address,
+                              widget.deliveryDetails.destAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -395,6 +404,10 @@ class _TripScreenState extends State<TripScreen> {
                     ElevatedButton.icon(
                       onPressed: () async {
                         if (deliveryStatus == "accepted") {
+                          contactInfo = "   " +
+                              widget.deliveryDetails.destContact.name +
+                              "   " +
+                              widget.deliveryDetails.destContact.phone;
                           deliveryStatus = "arrived";
                           setState(() {
                             buttonTitle = "Start Trip";
@@ -410,14 +423,13 @@ class _TripScreenState extends State<TripScreen> {
 
                           await drawPolyLineFromOriginToDestination(
                               LatLng(
-                                  double.parse(widget.deliveryDetails!.src.lat),
+                                  double.parse(widget.deliveryDetails.src.lat),
                                   double.parse(
-                                      widget.deliveryDetails!.src.long)),
+                                      widget.deliveryDetails.src.long)),
                               LatLng(
+                                  double.parse(widget.deliveryDetails.dest.lat),
                                   double.parse(
-                                      widget.deliveryDetails!.dest.lat),
-                                  double.parse(
-                                      widget.deliveryDetails!.dest.long)));
+                                      widget.deliveryDetails.dest.long)));
                           Navigator.pop(context);
                         } else if (deliveryStatus == "arrived") {
                           deliveryStatus = "ontrip";
@@ -427,11 +439,11 @@ class _TripScreenState extends State<TripScreen> {
                           });
 
                           updateDeliveryStatus(
-                              "collected", widget.deliveryDetails!);
+                              "collected", widget.deliveryDetails);
                         } else if (deliveryStatus == "ontrip") {
                           //update DB status order
                           updateDeliveryStatus(
-                              "arrived", widget.deliveryDetails!);
+                              "arrived", widget.deliveryDetails);
                           streamSubscriptionCourierLivePosition!.cancel();
                           Utils.resumeLiveLocationUpdates();
                           updateCourierStatus("idle");

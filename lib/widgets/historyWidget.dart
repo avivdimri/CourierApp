@@ -38,7 +38,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0),
                     child: Text(
-                      "User : " + widget.tripsHistory!.src_contact.name,
+                      "User : " + widget.tripsHistory!.srcContact.name,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                     width: 12,
                   ),
                   Text(
-                    widget.tripsHistory!.src_contact.phone,
+                    widget.tripsHistory!.srcContact.phone,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -100,7 +100,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.tripsHistory!.src_address,
+                        widget.tripsHistory!.srcAddress,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
@@ -129,7 +129,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.tripsHistory!.dest_address,
+                        widget.tripsHistory!.destAddress,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,

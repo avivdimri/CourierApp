@@ -12,13 +12,13 @@ class AllDeliveriesInfo extends ChangeNotifier {
   List<String> feedDeliveryIds = [];
   List<String> myDeliveryIds = [];
   Courier courierInfo = Courier(
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
-      phone_number: "",
-      VehicleType: "",
-      company_id: []);
+      phoneNumber: "",
+      vehicleType: "",
+      companyId: []);
 
   updateHistoryDeliveriesList(Delivery delivery) {
     if (!historyDeliveryIds.contains(delivery.id)) {
@@ -29,7 +29,6 @@ class AllDeliveriesInfo extends ChangeNotifier {
   }
 
   updateCourierInfo(Courier courier) {
-    print("coruier info is " + courierInfo.last_name);
     courierInfo = courier;
     notifyListeners();
   }
@@ -41,6 +40,7 @@ class AllDeliveriesInfo extends ChangeNotifier {
     historyDeliveryIds = [];
     feedDeliveryIds = [];
     myDeliveryIds = [];
+    notifyListeners();
   }
 
   updateFeedDeliveriesList(Delivery delivery) {

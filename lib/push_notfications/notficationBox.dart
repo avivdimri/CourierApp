@@ -9,8 +9,8 @@ import 'package:my_app/models/delivery.dart';
 import '../Screens/Tabs/homeTab.dart';
 
 class NotificationBox extends StatefulWidget {
-  Delivery? deliveryDetails;
-  NotificationBox({this.deliveryDetails});
+  Delivery deliveryDetails;
+  NotificationBox({required this.deliveryDetails});
 
   @override
   State<NotificationBox> createState() => _NotificationBoxState();
@@ -72,7 +72,7 @@ class _NotificationBoxState extends State<NotificationBox> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          widget.deliveryDetails!.src_address,
+                          widget.deliveryDetails.srcAddress,
                           style: const TextStyle(
                             fontSize: 13,
                           ),
@@ -99,7 +99,7 @@ class _NotificationBoxState extends State<NotificationBox> {
                     Expanded(
                       child: Container(
                         child: Text(
-                          widget.deliveryDetails!.dest_address,
+                          widget.deliveryDetails.destAddress,
                           style: const TextStyle(
                             fontSize: 13,
                           ),
@@ -167,7 +167,7 @@ class _NotificationBoxState extends State<NotificationBox> {
   }
 
   acceptDeliverRequest(BuildContext context) async {
-    updateDeliveryStatus("on the way", widget.deliveryDetails!);
+    updateDeliveryStatus("on the way", widget.deliveryDetails);
     //add order to courier's history
     updateCourierStatus("busy");
     Navigator.pop(context);

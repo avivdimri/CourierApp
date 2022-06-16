@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/Screens/Tabs/feedTab.dart';
 import 'package:my_app/models/delivery.dart';
 import 'package:my_app/push_notfications/pushNotficationsSystem.dart';
+import 'package:provider/provider.dart';
+import '../globalUtils/AllDeliveriesInfo.dart';
 import '../globalUtils/utils.dart';
 
-class FeedWidget extends StatefulWidget {
-  Delivery? delivery;
+class FeedWidget extends StatelessWidget {
+  final Delivery delivery;
+  final VoidCallback callback;
 
-  FeedWidget({this.delivery});
-
-  @override
-  State<FeedWidget> createState() => _FeedWidgetState();
-}
-
-class _FeedWidgetState extends State<FeedWidget> {
-  @override
-  void initState() {
-    super.initState();
-    Utils.updateDeliveriesForOnlineCourier(context);
-  }
+  FeedWidget({required this.delivery, required this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +28,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0),
                     child: Text(
-                      "User : " + widget.delivery!.src_contact.name,
+                      "User : " + delivery.srcContact.name,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -70,7 +63,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                     width: 12,
                   ),
                   Text(
-                    widget.delivery!.src_contact.phone,
+                    delivery.srcContact.phone,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -97,7 +90,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.delivery!.src_address,
+                        delivery.srcAddress,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
@@ -126,7 +119,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                   Expanded(
                     child: Container(
                       child: Text(
-                        widget.delivery!.dest_address,
+                        delivery.destAddress,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
@@ -143,12 +136,11 @@ class _FeedWidgetState extends State<FeedWidget> {
               Row(
                 children: [
                   ElevatedButton(
-                      onPressed: (() {
-                        setState(() {
-                          PushNotficationsSystem.createFutureNotfication(
-                              widget.delivery!, context);
-                        });
-                      }),
+                      onPressed: () async {
+                        await PushNotficationsSystem.createFutureNotfication(
+                            delivery, context);
+                        callback();
+                      },
                       style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(255, 1, 14, 61),
                       ),
@@ -170,13 +162,13 @@ class _FeedWidgetState extends State<FeedWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(""),
-                  widget.delivery!.express
+                  delivery.express
                       ? const Text("express",
                           style: TextStyle(
                             color: Colors.grey,
                           ))
                       : Text(
-                          widget.delivery!.deadline!,
+                          delivery.deadline!,
                           style: const TextStyle(
                             color: Colors.grey,
                           ),

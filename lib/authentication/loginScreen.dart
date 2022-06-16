@@ -59,13 +59,16 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pop(context);
       } else {
         var id = response.data as String;
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
+
         prefs.setString('username', emailTextEditingController.text.trim());
         prefs.setString('userId', id);
+        prefs.setString('isActive', "false");
         setState(() {
           name = emailTextEditingController.text.trim();
           isLoggedIn = true;
           userId = id;
+          isCourierActive = false;
+          statusText = "Offline";
         });
         emailTextEditingController.clear();
         Fluttertoast.showToast(

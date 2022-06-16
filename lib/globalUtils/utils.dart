@@ -7,6 +7,7 @@ import 'package:my_app/models/delivery.dart';
 import 'package:provider/provider.dart';
 
 import '../globalUtils/global.dart';
+import '../models/courier.dart';
 import 'allDeliveriesInfo.dart';
 import '../models/directionDetailsInfo.dart';
 
@@ -43,9 +44,9 @@ class Utils {
     return directionDetailsInfo;
   }
 
-  static pauseLiveLocationUpdates() {
+  static pauseLiveLocationUpdates() async {
     streamSubscriptionPosition!.pause();
-    Geofire.removeLocation(userId);
+    await Geofire.removeLocation(userId);
   }
 
   static resumeLiveLocationUpdates() {
@@ -72,17 +73,17 @@ class Utils {
       var data = json.decode(jsonList);
       var map = data.map<Delivery>((json) => Delivery.fromJson(json));
       deliveries = map.toList();
-      Provider.of<AllDeliveriesInfo>(context, listen: false)
+      await Provider.of<AllDeliveriesInfo>(context, listen: false)
           .clearDeliveriesLists();
       for (Delivery delivery in deliveries) {
-        if ((delivery.status == "arrived") && (delivery.courier_id == userId)) {
+        if ((delivery.status == "arrived") && (delivery.courierId == userId)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateHistoryDeliveriesList(delivery);
         } else if (delivery.status == "pending") {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateFeedDeliveriesList(delivery);
         } else if ((delivery.status == "assigned") &&
-            (delivery.courier_id == userId)) {
+            (delivery.courierId == userId)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateMyDeliveriesList(delivery);
         }
@@ -104,6 +105,23 @@ class Utils {
       }
     } catch (exp) {
       return "Error Occurred, Failed. No Response.";
+    }
+  }
+
+  static Future<void> getCourierInfo(context) async {
+    var response;
+    try {
+      response = await dio.get(basicUri + 'get_courier/$userId');
+    } catch (onError) {
+      print("error !!!! getCourierInfo function  ");
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+      // Navigator.pop(context);
+    }
+    if (response != null) {
+      var jsonList = response.data;
+      var data = json.decode(jsonList);
+      Provider.of<AllDeliveriesInfo>(context, listen: false)
+          .updateCourierInfo(Courier.fromJson(data));
     }
   }
 }

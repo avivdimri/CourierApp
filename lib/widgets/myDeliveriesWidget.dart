@@ -8,17 +8,14 @@ import '../globalUtils/utils.dart';
 import '../globalUtils/global.dart';
 import '../push_notfications/localNotificationSystem.dart';
 
-class MyDeliveriesWidget extends StatefulWidget {
-  Delivery? delivery;
-  int? id;
+class MyDeliveriesWidget extends StatelessWidget {
+  Delivery delivery;
+  int id;
+  final VoidCallback callback;
 
-  MyDeliveriesWidget({this.delivery, this.id});
+  MyDeliveriesWidget(
+      {required this.delivery, required this.id, required this.callback});
 
-  @override
-  State<MyDeliveriesWidget> createState() => _MyDeliveriesWidgetState();
-}
-
-class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +31,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 Padding(
                   padding: const EdgeInsets.only(left: 6.0),
                   child: Text(
-                    "User : " + widget.delivery!.src_contact.name,
+                    "User : " + delivery.srcContact.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -72,7 +69,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                   width: 20,
                 ),
                 Text(
-                  widget.delivery!.src_contact.phone,
+                  delivery.srcContact.phone,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -99,7 +96,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 Expanded(
                   child: Container(
                     child: Text(
-                      widget.delivery!.src_address,
+                      delivery.srcAddress,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 16,
@@ -128,7 +125,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                 Expanded(
                   child: Container(
                     child: Text(
-                      widget.delivery!.dest_address,
+                      delivery.destAddress,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 16,
@@ -163,8 +160,7 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
                   width: 38,
                 ),
                 Text(
-                  "ID: " +
-                      widget.id.toString(), //widget.tripsHistory!.company_id,
+                  "ID: " + id.toString(), //widget.tripsHistory!.company_id,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -178,9 +174,9 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(""),
-                widget.delivery!.deadline != null
+                delivery.deadline != null
                     ? Text(
-                        widget.delivery!.deadline!,
+                        delivery.deadline!,
                         style: const TextStyle(
                           color: Colors.grey,
                         ),
@@ -204,28 +200,29 @@ class _MyDeliveriesWidgetState extends State<MyDeliveriesWidget> {
   }
 
   startTrip(BuildContext context) async {
-    if (!isCourierActive) {
+    if (!isCourierActive!) {
       Fluttertoast.showToast(
           msg: "Please strart your shift in the Home tab before starting trip");
       return;
     }
+    await updateDeliveryStatus("on the way", delivery);
+    await Utils.updateDeliveriesForOnlineCourier(context);
+    callback();
     updateCourierStatus("busy");
     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-    DateTime dateTime = dateFormat.parse(widget.delivery!.deadline!);
+    DateTime dateTime = dateFormat.parse(delivery.deadline!);
     DateTime futureNotificationTime = DateTime.now().add(Duration(minutes: 1));
     //print("the diff is : " + futureNotificationTime.toString());
     //print("the diff is : " + dateTime.toString());
     if (futureNotificationTime.isBefore(dateTime)) {
       print("cancel future notification!!!!");
-      LocalNotificationSystem.cancel(identityHashCode(widget.delivery!.id));
+      LocalNotificationSystem.cancel(identityHashCode(delivery.id));
     }
-    updateDeliveryStatus("on the way", widget.delivery!);
 
     Utils.pauseLiveLocationUpdates();
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                TripScreen(deliveryDetails: widget.delivery)));
+            builder: (context) => TripScreen(deliveryDetails: delivery)));
   }
 }

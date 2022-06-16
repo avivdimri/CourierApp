@@ -1,11 +1,15 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:my_app/Screens/Tabs/homeTab.dart';
 import 'package:my_app/Screens/editProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../globalUtils/global.dart';
 import '../../globalUtils/allDeliveriesInfo.dart';
+import '../../globalUtils/utils.dart';
 import '../enterScreen.dart';
 
 class ProfileTabPage extends StatefulWidget {
@@ -16,6 +20,13 @@ class ProfileTabPage extends StatefulWidget {
 }
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Utils.getCourierInfo(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,11 +43,11 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                   child: Text(
                     Provider.of<AllDeliveriesInfo>(context, listen: false)
                             .courierInfo
-                            .first_name +
+                            .firstName +
                         " " +
                         Provider.of<AllDeliveriesInfo>(context, listen: false)
                             .courierInfo
-                            .last_name,
+                            .lastName,
                     style: const TextStyle(
                       fontSize: 26.0,
                       color: Colors.black,
@@ -65,7 +76,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             Text(
               Provider.of<AllDeliveriesInfo>(context, listen: false)
                   .courierInfo
-                  .company_id
+                  .companyId
                   .toString(),
               style: const TextStyle(
                 fontSize: 18.0,
@@ -92,7 +103,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             buildInfoCard(
                 Provider.of<AllDeliveriesInfo>(context, listen: true)
                     .courierInfo
-                    .phone_number,
+                    .phoneNumber,
                 Icons.phone_android),
             buildInfoCard(
                 Provider.of<AllDeliveriesInfo>(context, listen: true)
@@ -102,7 +113,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             buildInfoCard(
                 Provider.of<AllDeliveriesInfo>(context, listen: true)
                     .courierInfo
-                    .VehicleType,
+                    .vehicleType,
                 Icons.car_repair),
 
             const SizedBox(
@@ -178,9 +189,15 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
 
   Future<Null> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (isCourierActive!) {
+      FirebaseDatabase.instance.ref().child("indexes").remove();
+      await Geofire.removeLocation(userId);
+      updateCourierStatus("offline");
+    }
+
     prefs.setString('username', null);
     prefs.setString('userId', null);
-
+    prefs.setString('isActive', null);
     setState(() {
       name = '';
       isLoggedIn = false;
@@ -188,6 +205,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
       statusText = "Offline";
       isCourierActive = false;
     });
+
     Fluttertoast.showToast(
         msg: "Sign out successfully.", timeInSecForIosWeb: 2);
     Navigator.push(context,
