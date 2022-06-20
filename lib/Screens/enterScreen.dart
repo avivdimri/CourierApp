@@ -30,7 +30,7 @@ class _EnterScreenState extends State<EnterScreen> {
         });
       }
       if (Platform.isAndroid) {
-        basicUri = "http://10.0.0.15:3000/";
+        basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       } else if (Platform.isIOS) {
         basicUri = "https://deliverysystemmanagement.herokuapp.com/";
       }

@@ -24,13 +24,14 @@ class ProgressBox extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
             ),
             const SizedBox(
-              width: 26.0,
+              width: 20.0,
             ),
             Text(
               message!,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 9,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ]),

@@ -64,13 +64,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
     }
   }
 
-  readCurrentCourierInfo() async {
-    PushNotficationsSystem pushNotficationsSystem = PushNotficationsSystem();
-    pushNotficationsSystem.initCloudMessaging(context);
-    pushNotficationsSystem.generateToken();
-    Utils.updateDeliveriesForOnlineCourier(context);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -175,8 +168,11 @@ class _HomeTabPageState extends State<HomeTabPage> {
     var index = h3.geoToH3(geoCoord, 7);
     indexRef.child(userId).set(index.toRadixString(16));
     indexRef.child(userId).set(index);
-    Geofire.setLocation(userId, courierCurrentPosition!.latitude,
-        courierCurrentPosition!.longitude);
+    if (mounted) {
+      Geofire.setLocation(userId, courierCurrentPosition!.latitude,
+          courierCurrentPosition!.longitude);
+    }
+
     //update the stauts of the courier
 
     updateCourierStatus("idle");

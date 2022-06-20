@@ -21,11 +21,11 @@ class ProfileTabPage extends StatefulWidget {
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
   @override
-  void initState() {
+  /*void initState() {
     // TODO: implement initState
     super.initState();
     Utils.getCourierInfo(context);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +37,36 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
           children: [
             //name
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 50.0),
-                  child: Text(
-                    Provider.of<AllDeliveriesInfo>(context, listen: false)
-                            .courierInfo
-                            .firstName +
-                        " " +
+                  padding: const EdgeInsets.only(left: 38.0),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.person,
+                        color: Colors.black,
+                        size: 28,
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Text(
                         Provider.of<AllDeliveriesInfo>(context, listen: false)
-                            .courierInfo
-                            .lastName,
-                    style: const TextStyle(
-                      fontSize: 26.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+                                .courierInfo
+                                .firstName +
+                            " " +
+                            Provider.of<AllDeliveriesInfo>(context,
+                                    listen: false)
+                                .courierInfo
+                                .lastName,
+                        style: const TextStyle(
+                          fontSize: 26.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(
@@ -64,20 +78,21 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                       MaterialPageRoute(
                           builder: (context) => EditProfileScreen()),
                     );
-                    //SystemNavigator.pop();
                   },
                   style: ElevatedButton.styleFrom(
                       primary: Colors.white, elevation: 0),
                   child: buildEditIcon(Color.fromARGB(255, 4, 46, 119)),
                 ),
-                // buildEditIcon(Color.fromARGB(255, 4, 46, 119)),
               ],
+            ),
+            const SizedBox(
+              height: 10,
             ),
             Text(
               Provider.of<AllDeliveriesInfo>(context, listen: false)
                   .courierInfo
-                  .companyId
-                  .toString(),
+                  .companyNames
+                  .join(", "),
               style: const TextStyle(
                 fontSize: 18.0,
                 color: Colors.grey,
@@ -86,7 +101,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             ),
 
             const SizedBox(
-              height: 20,
+              height: 40,
               width: 200,
               child: Divider(
                 color: Colors.white,
@@ -94,11 +109,6 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                 thickness: 2,
               ),
             ),
-
-            const SizedBox(
-              height: 38.0,
-            ),
-
             //phone
             buildInfoCard(
                 Provider.of<AllDeliveriesInfo>(context, listen: true)
@@ -123,7 +133,6 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             ElevatedButton(
               onPressed: () {
                 logout();
-                //SystemNavigator.pop();
               },
               style: ElevatedButton.styleFrom(
                 primary: Colors.redAccent,

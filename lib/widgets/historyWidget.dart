@@ -33,28 +33,22 @@ class _HistoryWidgetState extends State<HistoryWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: Text(
-                      "User : " + widget.tripsHistory!.srcContact.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  const Icon(
+                    Icons.person,
+                    color: Colors.black,
+                    size: 28,
                   ),
                   const SizedBox(
                     width: 12,
                   ),
                   Text(
-                    "Pizza Hut", //widget.tripsHistory!.company_id,
+                    widget.tripsHistory!.srcContact.name,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                  )
+                  ),
                 ],
               ),
 
@@ -83,7 +77,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
               ),
 
               const SizedBox(
-                height: 20,
+                height: 12,
               ),
 
               //icon + pickup
@@ -162,6 +156,13 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                             color: Colors.grey,
                           ),
                         ),
+                  const Text(
+                    "Pizza Hut",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
 

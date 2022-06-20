@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../globalUtils/global.dart';
 import '../globalUtils/allDeliveriesInfo.dart';
+import '../widgets/progressDialog.dart';
 import '../widgets/textFieldWidget.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -112,8 +113,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: 42,
               ),
               ElevatedButton(
-                  onPressed: (() {
-                    validateAndSaveInfo();
+                  onPressed: (() async {
+                    await validateAndSaveInfo();
                   }),
                   style: ElevatedButton.styleFrom(
                     primary: Colors.blue,
@@ -136,8 +137,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else if (selectdVehicleType == null) {
       Fluttertoast.showToast(msg: "vehicle tepe must be choosen");
     } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => ProgressBox(
+          message: "Saving, please wait...",
+        ),
+      );
       await updateCourierInfo();
-      getCourierInfo();
+      await getCourierInfo();
+      Navigator.pop(context);
       Navigator.pop(context);
     }
   }

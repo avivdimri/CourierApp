@@ -41,8 +41,7 @@ class PushNotficationsSystem {
     });
   }
 
-  static createFutureNotfication(
-      Delivery delivery, BuildContext context) async {
+  static createFutureNotfication(Delivery delivery, provider, callback) async {
     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     DateTime dateTime = dateFormat.parse(delivery.deadline!);
     DateTime now = DateTime.now().add(const Duration(hours: 1));
@@ -54,8 +53,7 @@ class PushNotficationsSystem {
     }
     //dateTime = DateTime.now().add(const Duration(seconds: 80));
     await updateDeliveryStatus("assigned", delivery);
-    await Utils.updateDeliveriesForOnlineCourier(context);
-
+    await callback();
     LocalNotificationSystem.showScheduledNotification(
         id: identityHashCode(delivery.id),
         title: "Reminder",

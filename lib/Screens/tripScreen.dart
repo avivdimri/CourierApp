@@ -78,7 +78,7 @@ class _TripScreenState extends State<TripScreen> {
 
     setState(() {
       Polyline polyline = Polyline(
-        color: Colors.purpleAccent,
+        color: Color.fromARGB(255, 64, 173, 251),
         polylineId: const PolylineId("PolylineID"),
         jointType: JointType.round,
         points: polyLinePositionCoordinates,
@@ -442,11 +442,19 @@ class _TripScreenState extends State<TripScreen> {
                               "collected", widget.deliveryDetails);
                         } else if (deliveryStatus == "ontrip") {
                           //update DB status order
-                          updateDeliveryStatus(
+                          showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext b) => ProgressBox(
+                                    message: "Loading...",
+                                  ));
+                          await updateDeliveryStatus(
                               "arrived", widget.deliveryDetails);
+                          await Utils.updateDeliveriesForOnlineCourier(context);
                           streamSubscriptionCourierLivePosition!.cancel();
                           Utils.resumeLiveLocationUpdates();
                           updateCourierStatus("idle");
+                          Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         }
                       },

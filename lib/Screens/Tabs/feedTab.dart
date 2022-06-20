@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/widgets/feedWidget.dart';
 import 'package:provider/provider.dart';
 
+import '../../globalUtils/global.dart';
 import '../../globalUtils/utils.dart';
 import '../../globalUtils/allDeliveriesInfo.dart';
 import '../../models/delivery.dart';
@@ -12,10 +16,38 @@ class FeedTab extends StatefulWidget {
 }
 
 class _FeedTabState extends State<FeedTab> {
+  bool isSearching = false;
+  late List<Delivery> filteredDeliveries = [];
   @override
   void initState() {
     super.initState();
-    Utils.updateDeliveriesForOnlineCourier(context);
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    Utils.updateDeliveriesForOnlineCourier1(_provider);
+    filteredDeliveries = _provider.feedDeliveries;
+  }
+
+  void _filterDeliveries(value) {
+    setState(() {
+      filteredDeliveries =
+          Provider.of<AllDeliveriesInfo>(context, listen: false)
+              .feedDeliveries
+              .where((delivery) => delivery.srcContact.name
+                  .toLowerCase()
+                  .contains(value.toLowerCase()))
+              .toList();
+    });
+  }
+
+  var _provider;
+  @override
+  void didChangeDependencies() {
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -24,14 +56,47 @@ class _FeedTabState extends State<FeedTab> {
       backgroundColor: const Color.fromARGB(255, 1, 14, 61),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 1, 14, 61),
-        title: const Text("Deliveries feed"),
+        title: !isSearching
+            ? const Center(child: Text('My Feed'))
+            : TextField(
+                onChanged: (value) {
+                  _filterDeliveries(value);
+                },
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Search delivery ",
+                    hintStyle: TextStyle(color: Colors.white)),
+              ),
+        actions: <Widget>[
+          isSearching
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                      filteredDeliveries = _provider.feedDeliveries;
+                    });
+                  },
+                  icon: const Icon(Icons.cancel),
+                )
+              : IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  },
+                  icon: const Icon(Icons.search),
+                )
+        ],
         automaticallyImplyLeading: false,
       ),
-      body: Provider.of<AllDeliveriesInfo>(context, listen: false)
-              .feedDeliveries
-              .isNotEmpty
+      body: filteredDeliveries.isNotEmpty
           ? RefreshIndicator(
               onRefresh: () async {
+                await Utils.updateDeliveriesForOnlineCourier1(_provider);
                 setState(() {});
               },
               child: ListView.separated(
@@ -45,29 +110,34 @@ class _FeedTabState extends State<FeedTab> {
                     color: Colors.white54,
                     child: Column(children: [
                       FeedWidget(
-                          delivery: Provider.of<AllDeliveriesInfo>(context,
-                                  listen: false)
-                              .feedDeliveries[i],
+                          delivery: filteredDeliveries[i],
                           callback: () async {
-                            setState(() {});
-                          }),
+                            await Utils.updateDeliveriesForOnlineCourier1(
+                                _provider);
+                            if (mounted) {
+                              setState(() {
+                                filteredDeliveries = _provider.feedDeliveries;
+                              });
+                            }
+                          },
+                          provider: _provider),
                     ]),
                   );
                 },
-                itemCount:
-                    Provider.of<AllDeliveriesInfo>(context, listen: false)
-                        .feedDeliveries
-                        .length,
+                itemCount: filteredDeliveries.length,
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
               ),
             )
-          : const Text(
-              "No delivries in feed",
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          : const Center(
+              heightFactor: 8,
+              child: Text(
+                "No delivries in feed",
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
     );

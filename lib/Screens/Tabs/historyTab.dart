@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../../globalUtils/allDeliveriesInfo.dart';
+import '../../globalUtils/global.dart';
+import '../../globalUtils/utils.dart';
+import '../../models/delivery.dart';
 import '../../widgets/historyWidget.dart';
 
 class HistoryTab extends StatefulWidget {
@@ -12,7 +18,21 @@ class _HistoryTabState extends State<HistoryTab> {
   @override
   void initState() {
     super.initState();
-    //AssistantMethods.updateDeliveriesForOnlineCourier(context);
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    Utils.updateDeliveriesForOnlineCourier1(_provider);
+  }
+
+  var _provider;
+  @override
+  void didChangeDependencies() {
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    //_provider.clearDeliveriesLists();
+    super.dispose();
   }
 
   @override

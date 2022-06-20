@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/models/delivery.dart';
+import 'package:my_app/widgets/progressDialog.dart';
 import '../Screens/Tabs/homeTab.dart';
 import '../Screens/tripScreen.dart';
 import '../globalUtils/utils.dart';
@@ -26,47 +27,38 @@ class MyDeliveriesWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 6.0),
-                  child: Text(
-                    "User : " + delivery.srcContact.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                const Icon(
+                  Icons.person,
+                  color: Colors.black,
+                  size: 28,
                 ),
                 const SizedBox(
                   width: 12,
                 ),
-                const Text(
-                  "Pizza Hut", //widget.tripsHistory!.company_id,
-                  style: TextStyle(
-                    fontSize: 16,
+                Text(
+                  delivery.srcContact.name,
+                  style: const TextStyle(
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
               ],
             ),
 
             const SizedBox(
-              height: 12,
+              height: 8,
             ),
 
             Row(
               children: [
-                const SizedBox(
-                  width: 10,
-                ),
                 const Icon(
                   Icons.phone_android_rounded,
                   color: Colors.black,
                   size: 28,
                 ),
                 const SizedBox(
-                  width: 20,
+                  width: 12,
                 ),
                 Text(
                   delivery.srcContact.phone,
@@ -79,7 +71,7 @@ class MyDeliveriesWidget extends StatelessWidget {
             ),
 
             const SizedBox(
-              height: 20,
+              height: 12,
             ),
 
             //icon + pickup
@@ -88,7 +80,7 @@ class MyDeliveriesWidget extends StatelessWidget {
                 Image.asset(
                   "images/origin.png",
                   height: 26,
-                  width: 46,
+                  width: 26,
                 ),
                 const SizedBox(
                   width: 12,
@@ -117,7 +109,7 @@ class MyDeliveriesWidget extends StatelessWidget {
                 Image.asset(
                   "images/destination.png",
                   height: 24,
-                  width: 46,
+                  width: 24,
                 ),
                 const SizedBox(
                   width: 12,
@@ -205,10 +197,17 @@ class MyDeliveriesWidget extends StatelessWidget {
           msg: "Please strart your shift in the Home tab before starting trip");
       return;
     }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => ProgressBox(
+        message: "processing, please wait...",
+      ),
+    );
     await updateDeliveryStatus("on the way", delivery);
     await Utils.updateDeliveriesForOnlineCourier(context);
     callback();
     updateCourierStatus("busy");
+    Navigator.pop(context);
     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     DateTime dateTime = dateFormat.parse(delivery.deadline!);
     DateTime futureNotificationTime = DateTime.now().add(Duration(minutes: 1));

@@ -5,7 +5,7 @@ class Courier {
   String password;
   String phoneNumber;
   String vehicleType;
-  List<dynamic> companyId;
+  List<dynamic> companyNames;
   String status;
 
   Courier({
@@ -15,7 +15,7 @@ class Courier {
     required this.password,
     required this.phoneNumber,
     required this.vehicleType,
-    this.companyId = const [],
+    this.companyNames = const [],
     this.status = "offline",
   });
 
@@ -27,7 +27,7 @@ class Courier {
         password: json['password'],
         phoneNumber: json['phone_number'],
         vehicleType: json['Vehicle_type'],
-        companyId: json['company_id'],
+        companyNames: json['company_name'],
         status: json['status']);
   }
 
@@ -38,7 +38,6 @@ class Courier {
         'password': password,
         'phone_number': phoneNumber,
         'VehicleType': vehicleType,
-        'company_id': companyId,
         'status': status,
       };
 }

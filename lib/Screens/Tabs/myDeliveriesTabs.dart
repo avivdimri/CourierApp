@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/widgets/myDeliveriesWidget.dart';
 import 'package:provider/provider.dart';
+import '../../globalUtils/global.dart';
 import '../../globalUtils/utils.dart';
 import '../../globalUtils/allDeliveriesInfo.dart';
 import '../../models/delivery.dart';
@@ -16,9 +20,23 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
   @override
   void initState() {
     super.initState();
-    Utils.updateDeliveriesForOnlineCourier(context);
-    filteredDeliveries =
-        Provider.of<AllDeliveriesInfo>(context, listen: false).myDeliveries;
+
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    Utils.updateDeliveriesForOnlineCourier1(_provider);
+    filteredDeliveries = _provider.myDeliveries;
+  }
+
+  var _provider;
+  @override
+  void didChangeDependencies() {
+    _provider = Provider.of<AllDeliveriesInfo>(context, listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    //_provider.clearDeliveriesLists();
+    super.dispose();
   }
 
   void _filterDeliveries(value) {
@@ -40,7 +58,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 1, 14, 61),
         title: !isSearching
-            ? const Text('All Deliveries')
+            ? const Center(child: Text('My Deliveries'))
             : TextField(
                 onChanged: (value) {
                   _filterDeliveries(value);
@@ -51,7 +69,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
                       Icons.search,
                       color: Colors.white,
                     ),
-                    hintText: "Search delivery here",
+                    hintText: "Search delivery ",
                     hintStyle: TextStyle(color: Colors.white)),
               ),
         actions: <Widget>[
@@ -60,9 +78,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
                   onPressed: () {
                     setState(() {
                       isSearching = false;
-                      filteredDeliveries =
-                          Provider.of<AllDeliveriesInfo>(context, listen: false)
-                              .myDeliveries;
+                      filteredDeliveries = _provider.myDeliveries;
                     });
                   },
                   icon: const Icon(Icons.cancel),
@@ -81,6 +97,7 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
       body: filteredDeliveries.isNotEmpty
           ? RefreshIndicator(
               onRefresh: () async {
+                await Utils.updateDeliveriesForOnlineCourier1(_provider);
                 setState(() {});
               },
               child: ListView.separated(
@@ -98,29 +115,26 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
                           id: i + 1,
                           callback: () async {
                             setState(() {
-                              filteredDeliveries =
-                                  Provider.of<AllDeliveriesInfo>(context,
-                                          listen: false)
-                                      .myDeliveries;
+                              filteredDeliveries = _provider.myDeliveries;
                             });
                           }),
                     ]),
                   );
                 },
-                itemCount: filteredDeliveries
-                    .length, //Provider.of<AppInfo>(context, listen: false)
-                //.myDeliveries
-                //.length,
+                itemCount: filteredDeliveries.length,
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
               ),
             )
-          : const Text(
-              "No delivries in feed",
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          : const Center(
+              heightFactor: 8,
+              child: Text(
+                "You don't have deliveries",
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
     );

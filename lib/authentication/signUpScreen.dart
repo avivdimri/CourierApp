@@ -21,8 +21,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
-  TextEditingController companyIdTextEditingController =
-      TextEditingController();
   List<String> vehicleTypesList = ["bike", "scooter", "car", "van"];
   String? selectdVehicleType;
 
@@ -84,18 +82,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
           child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const SizedBox(
-              height: 2,
-            ),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(30.0),
               child: Image.asset("images/35303782.jpg"),
-            ),
-            const SizedBox(
-              height: 10,
             ),
             const Text(
               "Sign up",
@@ -238,7 +230,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               hint: const Text(
                 "Please choose vehicle type",
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 16.0,
                   color: Colors.grey,
                 ),
               ),
@@ -282,7 +274,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               },
               child: const Text(
                 "Already have an account? Log in here",
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ),
           ],

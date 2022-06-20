@@ -12,13 +12,13 @@ class AllDeliveriesInfo extends ChangeNotifier {
   List<String> feedDeliveryIds = [];
   List<String> myDeliveryIds = [];
   Courier courierInfo = Courier(
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      phoneNumber: "",
-      vehicleType: "",
-      companyId: []);
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    vehicleType: "",
+  );
 
   updateHistoryDeliveriesList(Delivery delivery) {
     if (!historyDeliveryIds.contains(delivery.id)) {

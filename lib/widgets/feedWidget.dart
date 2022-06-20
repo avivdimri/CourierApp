@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:my_app/Screens/Tabs/feedTab.dart';
 import 'package:my_app/models/delivery.dart';
 import 'package:my_app/push_notfications/pushNotficationsSystem.dart';
+import 'package:my_app/widgets/progressDialog.dart';
 import 'package:provider/provider.dart';
+import '../Screens/Tabs/homeTab.dart';
 import '../globalUtils/AllDeliveriesInfo.dart';
 import '../globalUtils/utils.dart';
+import '../push_notfications/localNotificationSystem.dart';
 
 class FeedWidget extends StatelessWidget {
   final Delivery delivery;
-  final VoidCallback callback;
-
-  FeedWidget({required this.delivery, required this.callback});
+  final Function callback;
+  var provider;
+  FeedWidget(
+      {required this.delivery, required this.callback, required this.provider});
 
   @override
   Widget build(BuildContext context) {
@@ -23,28 +29,26 @@ class FeedWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: Text(
-                      "User : " + delivery.srcContact.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  const Icon(
+                    Icons.person,
+                    color: Colors.black,
+                    size: 28,
                   ),
                   const SizedBox(
                     width: 12,
                   ),
-                  const Text(
-                    "Pizza Hut", //widget.tripsHistory!.company_id,
-                    style: TextStyle(
-                      fontSize: 16,
+                  Text(
+                    delivery.srcContact.name,
+                    style: const TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                  )
+                  ),
+                  const SizedBox(
+                    width: 200,
+                  ),
                 ],
               ),
 
@@ -137,9 +141,7 @@ class FeedWidget extends StatelessWidget {
                 children: [
                   ElevatedButton(
                       onPressed: () async {
-                        await PushNotficationsSystem.createFutureNotfication(
-                            delivery, context);
-                        callback();
+                        createFutureNotfication(context);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(255, 1, 14, 61),
@@ -173,6 +175,13 @@ class FeedWidget extends StatelessWidget {
                             color: Colors.grey,
                           ),
                         ),
+                  const Text(
+                    "Pizza Hut",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
 
@@ -184,5 +193,34 @@ class FeedWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  createFutureNotfication(context) async {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    DateTime dateTime = dateFormat.parse(delivery.deadline!);
+    DateTime now = DateTime.now().add(const Duration(hours: 1));
+    if (dateTime.isBefore(now)) {
+      Fluttertoast.showToast(
+          msg:
+              "Error: the dead line passed please contact with the your company");
+    }
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext c) {
+          return ProgressBox(
+            message: "processing, please wait...",
+          );
+        });
+    //dateTime = DateTime.now().add(const Duration(seconds: 80));
+    await updateDeliveryStatus("assigned", delivery);
+    await callback();
+    Navigator.pop(context);
+    LocalNotificationSystem.showScheduledNotification(
+        id: identityHashCode(delivery.id),
+        title: "Reminder",
+        body: "It's time to go out",
+        deliveryId: delivery.id,
+        scheduledDate: dateTime);
   }
 }

@@ -56,8 +56,6 @@ class Utils {
   }
 
   static Future<void> updateDeliveriesForOnlineCourier(context) async {
-    // get all orders of current corier
-
     List<Delivery> deliveries = [];
     var response;
     try {
@@ -79,13 +77,52 @@ class Utils {
         if ((delivery.status == "arrived") && (delivery.courierId == userId)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateHistoryDeliveriesList(delivery);
-        } else if (delivery.status == "pending") {
+        } else if (delivery.status == "pending" &&
+            !delivery.express &&
+            delivery.vehicleTypes!.contains(
+                Provider.of<AllDeliveriesInfo>(context, listen: false)
+                    .courierInfo
+                    .vehicleType)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateFeedDeliveriesList(delivery);
         } else if ((delivery.status == "assigned") &&
             (delivery.courierId == userId)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateMyDeliveriesList(delivery);
+        }
+      }
+    }
+  }
+
+  static Future<void> updateDeliveriesForOnlineCourier1(provider) async {
+    // get all orders of current corier
+
+    List<Delivery> deliveries = [];
+    var response;
+    try {
+      response = await dio
+          .get(basicUri + 'getAllDeliveries', queryParameters: {'id': userId});
+    } catch (onError) {
+      print("catch error readTripsKeysForOnlineCourier function");
+      print("the error is " + onError.toString());
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
+    }
+    if (response != null) {
+      var jsonList = response.data;
+      var data = json.decode(jsonList);
+      var map = data.map<Delivery>((json) => Delivery.fromJson(json));
+      deliveries = map.toList();
+      await provider.clearDeliveriesLists();
+      for (Delivery delivery in deliveries) {
+        if ((delivery.status == "arrived") && (delivery.courierId == userId)) {
+          provider.updateHistoryDeliveriesList(delivery);
+        } else if (delivery.status == "pending" &&
+            !delivery.express &&
+            delivery.vehicleTypes!.contains(provider.courierInfo.vehicleType)) {
+          provider.updateFeedDeliveriesList(delivery);
+        } else if ((delivery.status == "assigned") &&
+            (delivery.courierId == userId)) {
+          provider.updateMyDeliveriesList(delivery);
         }
       }
     }
