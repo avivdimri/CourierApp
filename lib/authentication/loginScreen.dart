@@ -48,13 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       response = await dio.post(basicUri + 'api/login_courier', data: json);
     } catch (onError) {
-      print("error !!!! loginCourier function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
       Navigator.pop(context);
     }
     if (response != null) {
       if (response.data == "wrong username or password") {
-        print("wrong username or password");
         Fluttertoast.showToast(msg: "Error: wrong username or password");
         Navigator.pop(context);
       } else {

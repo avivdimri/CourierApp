@@ -210,11 +210,9 @@ class MyDeliveriesWidget extends StatelessWidget {
     Navigator.pop(context);
     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     DateTime dateTime = dateFormat.parse(delivery.deadline!);
-    DateTime futureNotificationTime = DateTime.now().add(Duration(minutes: 1));
-    //print("the diff is : " + futureNotificationTime.toString());
-    //print("the diff is : " + dateTime.toString());
+    DateTime futureNotificationTime = DateTime.now().add(Duration(hours: 1));
     if (futureNotificationTime.isBefore(dateTime)) {
-      print("cancel future notification!!!!");
+      //print("cancel future notification!!!!");
       LocalNotificationSystem.cancel(identityHashCode(delivery.id));
     }
 

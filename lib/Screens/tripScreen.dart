@@ -59,11 +59,11 @@ class _TripScreenState extends State<TripScreen> {
 
     Navigator.pop(context);
 
-    print(directionDetailsInfo!.e_points);
+    //print(directionDetailsInfo!.e_points);
 
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyLinePointsResultList =
-        pPoints.decodePolyline(directionDetailsInfo.e_points!);
+        pPoints.decodePolyline(directionDetailsInfo!.e_points!);
 
     polyLinePositionCoordinates.clear();
 

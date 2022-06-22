@@ -167,7 +167,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
         lat: courierCurrentPosition!.latitude);
     var index = h3.geoToH3(geoCoord, 7);
     indexRef.child(userId).set(index.toRadixString(16));
-    indexRef.child(userId).set(index);
+
     if (mounted) {
       Geofire.setLocation(userId, courierCurrentPosition!.latitude,
           courierCurrentPosition!.longitude);
@@ -179,12 +179,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void courierIsOffline() async {
-    FirebaseDatabase.instance.ref().child("indexes").remove();
+    FirebaseDatabase.instance.ref().child("indexes").child(userId).remove();
     await Geofire.removeLocation(userId);
     updateCourierStatus("offline");
-    Future.delayed(const Duration(milliseconds: 2000), () async {
+    /*Future.delayed(const Duration(milliseconds: 2000), () async {
       SystemNavigator.pop();
-    });
+    });*/
   }
 
   void updateCourierLocationAtRT() {
@@ -205,7 +205,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
       LatLng latLng = LatLng(
           courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
-      if (mounted) {
+      if (mounted && newGoogleMapController != null) {
         newGoogleMapController!.animateCamera(CameraUpdate.newLatLng(latLng));
       }
     });
@@ -222,14 +222,15 @@ void updateCourierStatus(String status) async {
       data: json,
     );
 
-    print('User updated: ${response.data}');
+    //print('User updated: ${response.data}');
   } catch (onerror) {
-    print('Error updateCourierStatus function updating user: ' +
-        onerror.toString());
+    Fluttertoast.showToast(
+        msg: 'Error updateCourierStatus function updating user: ' +
+            onerror.toString());
   }
 }
 
-Future<void> updateDeliveryStatus(String status, Delivery delivery) async {
+Future<String> updateDeliveryStatus(String status, Delivery delivery) async {
   var deliveryId = delivery.id;
   var json = jsonEncode(<String, String>{
     'status': status,
@@ -241,7 +242,10 @@ Future<void> updateDeliveryStatus(String status, Delivery delivery) async {
       data: json,
     );
     print('User updated: ${response.data}');
+    return response.data;
   } catch (e) {
-    print('Error updateDeliveryStatus function  updating user: $e');
+    Fluttertoast.showToast(
+        msg: 'Error updateDeliveryStatus function  updating user: $e');
+    return "failed";
   }
 }

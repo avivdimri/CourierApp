@@ -197,12 +197,14 @@ class FeedWidget extends StatelessWidget {
 
   createFutureNotfication(context) async {
     DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-    DateTime dateTime = dateFormat.parse(delivery.deadline!);
-    DateTime now = DateTime.now().add(const Duration(hours: 1));
+    DateTime dateTime =
+        dateFormat.parse(delivery.deadline!).subtract(const Duration(hours: 1));
+    DateTime now = DateTime.now();
     if (dateTime.isBefore(now)) {
       Fluttertoast.showToast(
           msg:
               "Error: the dead line passed please contact with the your company");
+      return;
     }
     showDialog(
         context: context,

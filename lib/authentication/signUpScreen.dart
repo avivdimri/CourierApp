@@ -60,7 +60,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       response = await dio.post(basicUri + 'api/register', data: jsonData);
     } catch (onError) {
-      print("error !!!! saveCourierInfo function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
       Navigator.pop(context);
     }
@@ -69,7 +68,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Fluttertoast.showToast(
           msg: "Acocount has created.", timeInSecForIosWeb: 3);
     } else {
-      print("error !!!! saveCourierInfo 222 function  ");
       Fluttertoast.showToast(msg: "Error. " + data, timeInSecForIosWeb: 3);
     }
     Navigator.push(context,
@@ -113,11 +111,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -137,11 +135,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -162,11 +160,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -188,11 +186,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -213,11 +211,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -226,12 +224,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             DropdownButton(
               iconSize: 20,
-              dropdownColor: const Color.fromARGB(218, 255, 255, 255),
+              dropdownColor: Color.fromARGB(255, 222, 213, 213),
               hint: const Text(
                 "Please choose vehicle type",
                 style: TextStyle(
                   fontSize: 16.0,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
               ),
               value: selectdVehicleType,
@@ -239,7 +237,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 return DropdownMenuItem(
                   child: Text(
                     vehicle,
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: Colors.grey, fontSize: 18),
                   ),
                   value: vehicle,
                 );
@@ -274,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               },
               child: const Text(
                 "Already have an account? Log in here",
-                style: TextStyle(color: Colors.grey, fontSize: 12),
+                style: TextStyle(color: Colors.grey, fontSize: 15),
               ),
             ),
           ],

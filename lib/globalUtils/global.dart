@@ -5,6 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/courier.dart';
+
 bool isLoggedIn = false;
 String statusText = "";
 bool? isCourierActive;
@@ -20,3 +22,11 @@ String basicUri = '';
 AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
 Position? courierCurrentPosition;
 FirebaseDatabase database = FirebaseDatabase.instance;
+Courier courierInfo = Courier(
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  phoneNumber: "",
+  vehicleType: "",
+);

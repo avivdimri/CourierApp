@@ -14,6 +14,8 @@ import '../widgets/progressDialog.dart';
 import '../widgets/textFieldWidget.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  final Function callback;
+  EditProfileScreen({required this.callback});
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
@@ -28,21 +30,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    firstNameTextEditingController = TextEditingController(
-        text: Provider.of<AllDeliveriesInfo>(context, listen: false)
-            .courierInfo
-            .firstName);
-    lastNameTextEditingController = TextEditingController(
-        text: Provider.of<AllDeliveriesInfo>(context, listen: false)
-            .courierInfo
-            .lastName);
-    phoneNumberTextEditingController = TextEditingController(
-        text: Provider.of<AllDeliveriesInfo>(context, listen: false)
-            .courierInfo
-            .phoneNumber);
-    selectdVehicleType = Provider.of<AllDeliveriesInfo>(context, listen: false)
-        .courierInfo
-        .vehicleType;
+    firstNameTextEditingController =
+        TextEditingController(text: courierInfo.firstName);
+    lastNameTextEditingController =
+        TextEditingController(text: courierInfo.lastName);
+    phoneNumberTextEditingController =
+        TextEditingController(text: courierInfo.phoneNumber);
+    selectdVehicleType = courierInfo.vehicleType;
   }
 
   @override
@@ -145,6 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
       await updateCourierInfo();
       await getCourierInfo();
+      await widget.callback();
       Navigator.pop(context);
       Navigator.pop(context);
     }
@@ -163,11 +158,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         basicUri + 'updateCourierInfo/$userId',
         data: json,
       );
-
-      print('User updated: ${response.data}');
       return 0;
     } catch (e) {
-      print('Error "updateCourierInfo" updating user: $e');
+      Fluttertoast.showToast(
+          msg: 'Error "updateCourierInfo" updating user: $e');
       return -1;
     }
   }
@@ -177,15 +171,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       response = await dio.get(basicUri + 'get_courier/$userId');
     } catch (onError) {
-      print("error !!!! getCourierInfo function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
-      // Navigator.pop(context);
     }
     if (response != null) {
       var jsonList = response.data;
       var data = json.decode(jsonList);
-      Provider.of<AllDeliveriesInfo>(context, listen: false)
-          .updateCourierInfo(Courier.fromJson(data));
+      courierInfo = Courier.fromJson(data);
     }
   }
 }

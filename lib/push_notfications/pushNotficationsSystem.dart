@@ -21,7 +21,6 @@ class PushNotficationsSystem {
         .getInitialMessage()
         .then((RemoteMessage? remoteMessage) {
       if (remoteMessage != null) {
-        print("terminated!!!!");
         readOrderRequestInfo(remoteMessage.data["deliveryId"],
             remoteMessage.data["reminder"], context);
       }
@@ -29,37 +28,14 @@ class PushNotficationsSystem {
 
     // foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
-      print("foreground!!!!");
       readOrderRequestInfo(remoteMessage!.data["deliveryId"],
           remoteMessage.data["reminder"], context);
     });
     // background
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? remoteMessage) {
-      print("background!!!!");
       readOrderRequestInfo(remoteMessage!.data["deliveryId"],
           remoteMessage.data["reminder"], context);
     });
-  }
-
-  static createFutureNotfication(Delivery delivery, provider, callback) async {
-    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-    DateTime dateTime = dateFormat.parse(delivery.deadline!);
-    DateTime now = DateTime.now().add(const Duration(hours: 1));
-    if (dateTime.isBefore(now)) {
-      Fluttertoast.showToast(
-          msg:
-              "Error: the dead line passed please contact with the your company");
-      return;
-    }
-    //dateTime = DateTime.now().add(const Duration(seconds: 80));
-    await updateDeliveryStatus("assigned", delivery);
-    await callback();
-    LocalNotificationSystem.showScheduledNotification(
-        id: identityHashCode(delivery.id),
-        title: "Reminder",
-        body: "It's time to go out",
-        deliveryId: delivery.id,
-        scheduledDate: dateTime);
   }
 
   readOrderRequestInfo(
@@ -68,7 +44,6 @@ class PushNotficationsSystem {
     try {
       response = await dio.get(basicUri + 'get_order/$orderId');
     } catch (onError) {
-      print("error !!!! readOrderRequestInfo function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
@@ -87,8 +62,7 @@ class PushNotficationsSystem {
 
   Future generateToken() async {
     String? token = await messaging.getToken();
-    print("FCM registraion token: " + token!);
-    addCourierToken(token);
+    addCourierToken(token!);
     messaging.subscribeToTopic("allCouriers");
   }
 
@@ -104,11 +78,9 @@ class PushNotficationsSystem {
         data: json,
       );
     } catch (onError) {
-      print('Error "add couroer token function" updating user: ' +
-          onError.toString());
+      Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
-      print('User updated: ${response.data}');
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', token);
     }

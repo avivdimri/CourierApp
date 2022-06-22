@@ -41,7 +41,7 @@ class _HistoryTabState extends State<HistoryTab> {
       backgroundColor: Color.fromARGB(255, 1, 14, 61),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 1, 14, 61),
-        title: const Text("Trips History"),
+        title: const Center(child: Text("Trips History")),
         automaticallyImplyLeading: false,
       ),
       body: Provider.of<AllDeliveriesInfo>(context, listen: false)
@@ -69,12 +69,15 @@ class _HistoryTabState extends State<HistoryTab> {
               physics: const ClampingScrollPhysics(),
               shrinkWrap: true,
             )
-          : const Text(
-              "No delivries in History",
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          : const Center(
+              heightFactor: 8,
+              child: Text(
+                "No delivries in History",
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
     );

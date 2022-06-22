@@ -51,6 +51,7 @@ class Utils {
 
   static resumeLiveLocationUpdates() {
     streamSubscriptionPosition!.resume();
+    print("1111111111111111");
     Geofire.setLocation(userId, courierCurrentPosition!.latitude,
         courierCurrentPosition!.longitude);
   }
@@ -62,8 +63,6 @@ class Utils {
       response = await dio
           .get(basicUri + 'getAllDeliveries', queryParameters: {'id': userId});
     } catch (onError) {
-      print("catch error readTripsKeysForOnlineCourier function");
-      print("the error is " + onError.toString());
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
@@ -79,10 +78,7 @@ class Utils {
               .updateHistoryDeliveriesList(delivery);
         } else if (delivery.status == "pending" &&
             !delivery.express &&
-            delivery.vehicleTypes!.contains(
-                Provider.of<AllDeliveriesInfo>(context, listen: false)
-                    .courierInfo
-                    .vehicleType)) {
+            delivery.vehicleTypes!.contains(courierInfo.vehicleType)) {
           Provider.of<AllDeliveriesInfo>(context, listen: false)
               .updateFeedDeliveriesList(delivery);
         } else if ((delivery.status == "assigned") &&
@@ -103,8 +99,6 @@ class Utils {
       response = await dio
           .get(basicUri + 'getAllDeliveries', queryParameters: {'id': userId});
     } catch (onError) {
-      print("catch error readTripsKeysForOnlineCourier function");
-      print("the error is " + onError.toString());
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
     }
     if (response != null) {
@@ -118,7 +112,7 @@ class Utils {
           provider.updateHistoryDeliveriesList(delivery);
         } else if (delivery.status == "pending" &&
             !delivery.express &&
-            delivery.vehicleTypes!.contains(provider.courierInfo.vehicleType)) {
+            delivery.vehicleTypes!.contains(courierInfo.vehicleType)) {
           provider.updateFeedDeliveriesList(delivery);
         } else if ((delivery.status == "assigned") &&
             (delivery.courierId == userId)) {
@@ -150,15 +144,13 @@ class Utils {
     try {
       response = await dio.get(basicUri + 'get_courier/$userId');
     } catch (onError) {
-      print("error !!!! getCourierInfo function  ");
       Fluttertoast.showToast(msg: "Error: " + onError.toString());
-      // Navigator.pop(context);
     }
     if (response != null) {
       var jsonList = response.data;
       var data = json.decode(jsonList);
-      Provider.of<AllDeliveriesInfo>(context, listen: false)
-          .updateCourierInfo(Courier.fromJson(data));
+
+      courierInfo = Courier.fromJson(data);
     }
   }
 }

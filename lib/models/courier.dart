@@ -37,7 +37,7 @@ class Courier {
         'user_name': email,
         'password': password,
         'phone_number': phoneNumber,
-        'VehicleType': vehicleType,
+        'Vehicle_type': vehicleType,
         'status': status,
       };
 }

@@ -12,16 +12,6 @@ class HistoryWidget extends StatefulWidget {
 }
 
 class _HistoryWidgetState extends State<HistoryWidget> {
-  /*String formatDateAndTime(String dateTimeFromDB) {
-    DateTime dateTime = DateTime.parse(dateTimeFromDB);
-
-    // Dec 10                            //2022                         //1:12 pm
-    String formattedDatetime =
-        "${DateFormat.MMMd().format(dateTime)}, ${DateFormat.y().format(dateTime)} - ${DateFormat.jm().format(dateTime)}";
-
-    return formattedDatetime;
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Container(

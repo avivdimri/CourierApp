@@ -21,13 +21,6 @@ class ProfileTabPage extends StatefulWidget {
 
 class _ProfileTabPageState extends State<ProfileTabPage> {
   @override
-  /*void initState() {
-    // TODO: implement initState
-    super.initState();
-    Utils.getCourierInfo(context);
-  }*/
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -52,14 +45,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                         width: 12,
                       ),
                       Text(
-                        Provider.of<AllDeliveriesInfo>(context, listen: false)
-                                .courierInfo
-                                .firstName +
-                            " " +
-                            Provider.of<AllDeliveriesInfo>(context,
-                                    listen: false)
-                                .courierInfo
-                                .lastName,
+                        courierInfo.firstName + " " + courierInfo.lastName,
                         style: const TextStyle(
                           fontSize: 26.0,
                           color: Colors.black,
@@ -76,7 +62,11 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => EditProfileScreen()),
+                          builder: (context) => EditProfileScreen(
+                                callback: () async {
+                                  setState(() {});
+                                },
+                              )),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -89,10 +79,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
               height: 10,
             ),
             Text(
-              Provider.of<AllDeliveriesInfo>(context, listen: false)
-                  .courierInfo
-                  .companyNames
-                  .join(", "),
+              courierInfo.companyNames.join(", "),
               style: const TextStyle(
                 fontSize: 18.0,
                 color: Colors.grey,
@@ -110,21 +97,9 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
               ),
             ),
             //phone
-            buildInfoCard(
-                Provider.of<AllDeliveriesInfo>(context, listen: true)
-                    .courierInfo
-                    .phoneNumber,
-                Icons.phone_android),
-            buildInfoCard(
-                Provider.of<AllDeliveriesInfo>(context, listen: true)
-                    .courierInfo
-                    .email,
-                Icons.email),
-            buildInfoCard(
-                Provider.of<AllDeliveriesInfo>(context, listen: true)
-                    .courierInfo
-                    .vehicleType,
-                Icons.car_repair),
+            buildInfoCard(courierInfo.phoneNumber, Icons.phone_android),
+            buildInfoCard(courierInfo.email, Icons.email),
+            buildInfoCard(courierInfo.vehicleType, Icons.car_repair),
 
             const SizedBox(
               height: 32,
@@ -199,7 +174,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
   Future<Null> logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (isCourierActive!) {
-      FirebaseDatabase.instance.ref().child("indexes").remove();
+      FirebaseDatabase.instance.ref().child("indexes").child(userId).remove();
       await Geofire.removeLocation(userId);
       updateCourierStatus("offline");
     }

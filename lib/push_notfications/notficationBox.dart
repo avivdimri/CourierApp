@@ -43,14 +43,14 @@ class _NotificationBoxState extends State<NotificationBox> {
             "New Delivery Request",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 18,
             ),
           ),
           const SizedBox(
-            height: 12.0,
+            height: 18.0,
           ),
           const Divider(
-            height: 3,
+            height: 8,
             thickness: 3,
           ),
           //adrdesses
@@ -74,7 +74,7 @@ class _NotificationBoxState extends State<NotificationBox> {
                         child: Text(
                           widget.deliveryDetails.srcAddress,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -101,7 +101,7 @@ class _NotificationBoxState extends State<NotificationBox> {
                         child: Text(
                           widget.deliveryDetails.destAddress,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 15,
                           ),
                         ),
                       ),
@@ -167,7 +167,12 @@ class _NotificationBoxState extends State<NotificationBox> {
   }
 
   acceptDeliverRequest(BuildContext context) async {
-    updateDeliveryStatus("on the way", widget.deliveryDetails);
+    var result =
+        await updateDeliveryStatus("on the way", widget.deliveryDetails);
+    if (result == "ERROR") {
+      Fluttertoast.showToast(msg: "sorry, too late! the delivery is ocupided ");
+      return;
+    }
     //add order to courier's history
     updateCourierStatus("busy");
     Navigator.pop(context);
