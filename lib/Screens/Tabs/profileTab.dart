@@ -23,7 +23,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(255, 141, 171, 200),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,8 +70,10 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.white, elevation: 0),
-                  child: buildEditIcon(Color.fromARGB(255, 4, 46, 119)),
+                      primary: Colors.transparent, elevation: 0),
+                  child: buildEditIcon(
+                    Color.fromARGB(255, 4, 46, 119),
+                  ),
                 ),
               ],
             ),
@@ -82,7 +84,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
               courierInfo.companyNames.join(", "),
               style: const TextStyle(
                 fontSize: 18.0,
-                color: Colors.grey,
+                color: Colors.black45,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -102,7 +104,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
             buildInfoCard(courierInfo.vehicleType, Icons.car_repair),
 
             const SizedBox(
-              height: 32,
+              height: 50,
             ),
 
             ElevatedButton(
@@ -110,7 +112,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
                 logout();
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.redAccent,
+                primary: Color.fromARGB(255, 4, 46, 119),
               ),
               child: const Text(
                 "Logout",
@@ -125,7 +127,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
 
   Widget buildInfoCard(String textInfo, IconData iconData) {
     return Card(
-      color: Colors.white54,
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
       child: ListTile(
         leading: Icon(

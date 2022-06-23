@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:my_app/models/delivery.dart';
 
-import '../models/courier.dart';
-
 class AllDeliveriesInfo extends ChangeNotifier {
   List<Delivery> historyDeliveries = [];
   List<Delivery> feedDeliveries = [];

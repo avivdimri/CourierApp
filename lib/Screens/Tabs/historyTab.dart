@@ -38,9 +38,9 @@ class _HistoryTabState extends State<HistoryTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 1, 14, 61),
+      backgroundColor: Color.fromARGB(255, 141, 171, 200),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 14, 61),
+        backgroundColor: Color.fromARGB(255, 141, 171, 200),
         title: const Center(child: Text("Trips History")),
         automaticallyImplyLeading: false,
       ),
@@ -49,13 +49,14 @@ class _HistoryTabState extends State<HistoryTab> {
               .isNotEmpty
           ? ListView.separated(
               separatorBuilder: (context, i) => const Divider(
-                color: Colors.grey,
+                color: Colors.transparent,
                 thickness: 2,
                 height: 2,
               ),
               itemBuilder: (context, i) {
                 return Card(
-                  color: Colors.white54,
+                  elevation: 20,
+                  color: Colors.transparent,
                   child: HistoryWidget(
                     tripsHistory:
                         Provider.of<AllDeliveriesInfo>(context, listen: false)

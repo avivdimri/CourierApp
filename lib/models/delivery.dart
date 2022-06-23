@@ -33,7 +33,6 @@ class Delivery {
       required this.vehicleTypes});
 
   factory Delivery.fromJson(Map<String, dynamic> json) {
-    //print(json);
     return Delivery(
         id: json['_id'],
         srcContact: ContactInfo.fromJson(json['src_contact']),

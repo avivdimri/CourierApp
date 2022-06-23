@@ -77,28 +77,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(246, 255, 255, 255),
       body: SingleChildScrollView(
           child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(40.0),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Image.asset("images/35303782.jpg"),
+              padding: const EdgeInsets.all(40.0),
+              child: Image.asset("images/logo.jpg"),
             ),
             const Text(
               "Sign up",
               style: TextStyle(
                 fontSize: 26,
-                color: Colors.grey,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
             TextField(
               controller: firstNameTextEditingController,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "First Name",
@@ -122,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             TextField(
               controller: lastNameTextEditingController,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Last Name",
@@ -147,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: emailTextEditingController,
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Email",
@@ -173,7 +173,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               obscureText: true,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Password",
@@ -198,7 +198,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: phoneTextEditingController,
               keyboardType: TextInputType.phone,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Phone",
@@ -223,13 +223,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 20,
             ),
             DropdownButton(
-              iconSize: 20,
-              dropdownColor: Color.fromARGB(255, 222, 213, 213),
+              borderRadius: BorderRadius.circular(13),
+              iconSize: 24,
+              dropdownColor: Color.fromARGB(255, 238, 233, 233),
               hint: const Text(
                 "Please choose vehicle type",
                 style: TextStyle(
                   fontSize: 16.0,
-                  color: Colors.black,
+                  color: Colors.grey,
                 ),
               ),
               value: selectdVehicleType,
@@ -237,7 +238,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 return DropdownMenuItem(
                   child: Text(
                     vehicle,
-                    style: const TextStyle(color: Colors.grey, fontSize: 18),
+                    style: const TextStyle(color: Colors.black, fontSize: 18),
                   ),
                   value: vehicle,
                 );
@@ -256,12 +257,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   validateForm();
                 }),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.lightGreenAccent,
+                  primary: Color.fromARGB(255, 15, 148, 166),
                 ),
                 child: const Text(
                   "Create Account",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: Colors.white,
                     fontSize: 18,
                   ),
                 )),

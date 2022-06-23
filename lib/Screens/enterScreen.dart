@@ -15,7 +15,7 @@ class EnterScreen extends StatefulWidget {
 
 class _EnterScreenState extends State<EnterScreen> {
   startTimer() {
-    Timer(const Duration(seconds: 2), () async {
+    Timer(const Duration(seconds: 20), () async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? username = prefs.getString('username');
       final String? id = prefs.getString('userId');
@@ -55,12 +55,12 @@ class _EnterScreenState extends State<EnterScreen> {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-        color: Colors.black,
+        color: Color.fromARGB(246, 255, 255, 255),
         child: Center(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("images/35303782.jpg"),
+            Image.asset("images/logo.jpg"),
             const SizedBox(
               height: 10,
             ),

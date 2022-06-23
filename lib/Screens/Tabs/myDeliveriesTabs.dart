@@ -54,9 +54,9 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 1, 14, 61),
+      backgroundColor: Color.fromARGB(255, 141, 171, 200),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 14, 61),
+        backgroundColor: Color.fromARGB(255, 141, 171, 200),
         title: !isSearching
             ? const Center(child: Text('My Deliveries'))
             : TextField(
@@ -108,7 +108,8 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
                 ),
                 itemBuilder: (context, i) {
                   return Card(
-                    color: Colors.white54,
+                    elevation: 20,
+                    color: Colors.transparent,
                     child: Column(children: [
                       MyDeliveriesWidget(
                           delivery: filteredDeliveries[i],

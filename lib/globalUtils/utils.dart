@@ -18,7 +18,7 @@ class Utils {
       obtainOriginToDestinationDirectionDetails(
           LatLng origionPosition, LatLng destinationPosition) async {
     String urlOriginToDestinationDirectionDetails =
-        "https://maps.googleapis.com/maps/api/directions/json?origin=${origionPosition.latitude},${origionPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$google_key";
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${origionPosition.latitude},${origionPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&key=$googleKey";
 
     var responseDirectionApi =
         await receiveRequest(urlOriginToDestinationDirectionDetails);
@@ -51,7 +51,6 @@ class Utils {
 
   static resumeLiveLocationUpdates() {
     streamSubscriptionPosition!.resume();
-    print("1111111111111111");
     Geofire.setLocation(userId, courierCurrentPosition!.latitude,
         courierCurrentPosition!.longitude);
   }

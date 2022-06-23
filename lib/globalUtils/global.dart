@@ -15,7 +15,7 @@ String name = '';
 String userId = '';
 late final SharedPreferences prefs;
 var dio = Dio();
-String google_key = 'AIzaSyCqcNNmxm-9YBysFypGjn8BUwdM3TUUegw';
+String googleKey = 'AIzaSyCqcNNmxm-9YBysFypGjn8BUwdM3TUUegw';
 StreamSubscription<Position>? streamSubscriptionPosition;
 StreamSubscription<Position>? streamSubscriptionCourierLivePosition;
 String basicUri = '';

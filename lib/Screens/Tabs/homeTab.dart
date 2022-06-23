@@ -39,7 +39,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  Color buttonColor = Colors.grey;
+  Color buttonColor = Colors.green;
 
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
@@ -118,10 +118,10 @@ class _HomeTabPageState extends State<HomeTabPage> {
                 } else {
                   courierIsOffline();
                   setState(() {
-                    statusText = "Offline";
+                    statusText = "Start Shift";
                     isCourierActive = false;
                     prefs.setString('isActive', "false");
-                    buttonColor = Colors.grey;
+                    buttonColor = Colors.green;
                   });
                   Fluttertoast.showToast(msg: "you are offline now");
                 }
@@ -241,7 +241,7 @@ Future<String> updateDeliveryStatus(String status, Delivery delivery) async {
       basicUri + 'delivery_status/$deliveryId',
       data: json,
     );
-    print('User updated: ${response.data}');
+    //print('User updated: ${response.data}');
     return response.data;
   } catch (e) {
     Fluttertoast.showToast(

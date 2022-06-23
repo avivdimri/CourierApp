@@ -53,9 +53,9 @@ class _FeedTabState extends State<FeedTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 1, 14, 61),
+      backgroundColor: Color.fromARGB(255, 141, 171, 200),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 1, 14, 61),
+        backgroundColor: Color.fromARGB(255, 141, 171, 200),
         title: !isSearching
             ? const Center(child: Text('My Feed'))
             : TextField(
@@ -107,7 +107,8 @@ class _FeedTabState extends State<FeedTab> {
                 ),
                 itemBuilder: (context, i) {
                   return Card(
-                    color: Colors.white54,
+                    elevation: 20,
+                    color: Colors.transparent,
                     child: Column(children: [
                       FeedWidget(
                           delivery: filteredDeliveries[i],

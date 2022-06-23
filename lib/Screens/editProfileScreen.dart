@@ -111,12 +111,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     await validateAndSaveInfo();
                   }),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
+                    primary: Color.fromARGB(255, 4, 46, 119),
                   ),
                   child: const Text(
                     "Save",
                     style: TextStyle(
-                      color: Colors.black54,
+                      color: Colors.white,
                       fontSize: 18,
                     ),
                   )),

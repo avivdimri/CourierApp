@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_app/globalUtils/global.dart';
 import 'package:my_app/authentication/signUpScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Screens/enterScreen.dart';
 import '../widgets/progressDialog.dart';
 
@@ -82,27 +80,24 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(246, 255, 255, 255),
       body: SingleChildScrollView(
           child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(40.0),
         child: Column(
           children: [
             const SizedBox(
               height: 30,
             ),
             Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Image.asset("images/35303782.jpg"),
-            ),
-            const SizedBox(
-              height: 10,
+              padding: const EdgeInsets.all(40.0),
+              child: Image.asset("images/logo.jpg"),
             ),
             const Text(
               "Log in",
               style: TextStyle(
                 fontSize: 26,
-                color: Colors.grey,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -110,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: emailTextEditingController,
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Email",
@@ -136,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.text,
               obscureText: true,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black,
               ),
               decoration: const InputDecoration(
                 labelText: "Password",
@@ -148,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderSide: BorderSide(color: Colors.grey),
                 ),
                 hintStyle: TextStyle(
-                  color: Colors.grey,
+                  color: Colors.black,
                   fontSize: 10,
                 ),
                 labelStyle: TextStyle(
@@ -165,12 +160,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   validateForm();
                 }),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.lightGreenAccent,
+                  primary: Color.fromARGB(255, 15, 148, 166),
                 ),
                 child: const Text(
                   "Log in",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: Color.fromARGB(255, 255, 255, 255),
                     fontSize: 18,
                   ),
                 )),

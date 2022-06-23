@@ -20,7 +20,10 @@ class MyDeliveriesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
@@ -166,19 +169,19 @@ class MyDeliveriesWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(""),
-                delivery.deadline != null
-                    ? Text(
-                        delivery.deadline!,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      )
-                    : const Text(
-                        "express",
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
+                Text(
+                  delivery.deadline!,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                const Text(
+                  "Pizza Hut",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
               ],
             ),
 
