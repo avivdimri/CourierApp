@@ -111,7 +111,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                     statusText = "Online";
                     isCourierActive = true;
                     prefs.setString('isActive', "true");
-                    buttonColor = Colors.transparent;
+                    buttonColor = Colors.red;
                   });
                   updateCourierLocationAtRT();
                   Fluttertoast.showToast(msg: "you are online now");

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/courier.dart';
 
 bool isLoggedIn = false;
-String statusText = "";
+String statusText = "Start Shift";
 bool? isCourierActive;
 bool activeAfterKill = false;
 String name = '';

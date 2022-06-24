@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoggedIn = true;
           userId = id;
           isCourierActive = false;
-          statusText = "Offline";
+          statusText = "Start Shift";
         });
         emailTextEditingController.clear();
         Fluttertoast.showToast(
@@ -106,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.emailAddress,
               style: const TextStyle(
                 color: Colors.black,
+                fontSize: 18,
               ),
               decoration: const InputDecoration(
                 labelText: "Email",
@@ -118,11 +119,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -131,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.text,
               obscureText: true,
               style: const TextStyle(
+                fontSize: 18,
                 color: Colors.black,
               ),
               decoration: const InputDecoration(
@@ -144,11 +146,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 hintStyle: TextStyle(
                   color: Colors.black,
-                  fontSize: 10,
+                  fontSize: 12,
                 ),
                 labelStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),

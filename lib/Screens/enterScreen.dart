@@ -15,7 +15,7 @@ class EnterScreen extends StatefulWidget {
 
 class _EnterScreenState extends State<EnterScreen> {
   startTimer() {
-    Timer(const Duration(seconds: 20), () async {
+    Timer(const Duration(seconds: 2), () async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final String? username = prefs.getString('username');
       final String? id = prefs.getString('userId');
@@ -23,7 +23,7 @@ class _EnterScreenState extends State<EnterScreen> {
       if (username != null && id != null && isActive != null) {
         setState(() {
           isCourierActive = (isActive == "false") ? false : true;
-          statusText = (isActive == "false") ? "Offline" : "Online";
+          statusText = (isActive == "false") ? "Start Shift" : "Online";
           isLoggedIn = true;
           name = username;
           userId = id;

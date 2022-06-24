@@ -188,7 +188,7 @@ class _ProfileTabPageState extends State<ProfileTabPage> {
       name = '';
       isLoggedIn = false;
       userId = '';
-      statusText = "Offline";
+      statusText = "Start Shift";
       isCourierActive = false;
     });
 
