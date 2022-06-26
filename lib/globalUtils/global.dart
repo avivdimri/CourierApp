@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +15,8 @@ bool activeAfterKill = false;
 String name = '';
 String userId = '';
 late final SharedPreferences prefs;
+Color buttonColor = Colors.green;
+
 var dio = Dio();
 String googleKey = 'AIzaSyCqcNNmxm-9YBysFypGjn8BUwdM3TUUegw';
 StreamSubscription<Position>? streamSubscriptionPosition;

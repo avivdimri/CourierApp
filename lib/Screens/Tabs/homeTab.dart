@@ -39,8 +39,6 @@ class _HomeTabPageState extends State<HomeTabPage> {
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
 
-  Color buttonColor = Colors.green;
-
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
     if (_locationPermission == LocationPermission.denied) {

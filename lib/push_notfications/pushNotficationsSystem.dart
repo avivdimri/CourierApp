@@ -51,6 +51,7 @@ class PushNotficationsSystem {
       audioPlayer.play();
       var jsonList = response.data;
       var data = json.decode(jsonList);
+
       Delivery delivery = Delivery.fromJson(data);
       showDialog(
           context: context,
