@@ -175,8 +175,8 @@ class MyDeliveriesWidget extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-                const Text(
-                  "Pizza Hut",
+                Text(
+                  delivery.companyName!,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

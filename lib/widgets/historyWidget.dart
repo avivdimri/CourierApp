@@ -149,8 +149,8 @@ class _HistoryWidgetState extends State<HistoryWidget> {
                             color: Colors.grey,
                           ),
                         ),
-                  const Text(
-                    "Pizza Hut",
+                  Text(
+                    widget.tripsHistory!.companyName!,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

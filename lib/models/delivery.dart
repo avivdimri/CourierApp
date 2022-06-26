@@ -16,6 +16,7 @@ class Delivery {
   String? courierId;
   String? deadline;
   List<dynamic>? vehicleTypes;
+  String? companyName;
 
   Delivery(
       {required this.id,
@@ -30,6 +31,7 @@ class Delivery {
       required this.status,
       this.courierId,
       this.deadline,
+      this.companyName,
       required this.vehicleTypes});
 
   factory Delivery.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class Delivery {
         status: json['status'],
         courierId: json['courier_id'],
         deadline: json['deadline'],
+        companyName: json['company_name']['company_name'],
         vehicleTypes: json['Vehicle_type']);
   }
 }
