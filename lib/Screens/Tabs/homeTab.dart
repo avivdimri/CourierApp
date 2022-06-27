@@ -10,15 +10,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:h3_flutter/h3_flutter.dart';
-import 'package:my_app/globalUtils/utils.dart';
 import 'package:my_app/models/delivery.dart';
-import 'package:my_app/push_notfications/pushNotficationsSystem.dart';
-import 'package:provider/provider.dart';
 import '../../globalUtils/global.dart';
-import '../../globalUtils/allDeliveriesInfo.dart';
 import '../../globalUtils/googleMapsTheme.dart';
-import '../../models/courier.dart';
-import 'package:http/http.dart' as http;
 
 class HomeTabPage extends StatefulWidget {
   const HomeTabPage({Key? key}) : super(key: key);
@@ -28,6 +22,7 @@ class HomeTabPage extends StatefulWidget {
 }
 
 class _HomeTabPageState extends State<HomeTabPage> {
+  // init google map varabiables
   GoogleMapController? newGoogleMapController;
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
 
@@ -38,24 +33,32 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   var geoLocator = Geolocator();
   LocationPermission? _locationPermission;
+  final String ONLINE = "Online";
 
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
     if (_locationPermission == LocationPermission.denied) {
-      _locationPermission = await Geolocator.requestPermission();
+      Fluttertoast.showToast(
+          msg: "you can't use the app w/o give location permission");
+      Future.delayed(const Duration(milliseconds: 2000), () async {
+        SystemNavigator.pop();
+      });
     }
   }
 
   void locateDriverPosition() async {
+    //get the current location
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     courierCurrentPosition = cPosition;
-
+// convert lat long
     LatLng latLngPosition = LatLng(
         courierCurrentPosition!.latitude, courierCurrentPosition!.longitude);
 
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 14);
+
+    // only if nounted change camera positoin  because context issue
     if (mounted) {
       newGoogleMapController!
           .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
@@ -65,11 +68,12 @@ class _HomeTabPageState extends State<HomeTabPage> {
   @override
   void initState() {
     super.initState();
+    checkIfLocationPermissionAllowed();
     if (streamSubscriptionPosition == null && activeAfterKill) {
+      // open app and already online
       courierIsOnline();
       updateCourierLocationAtRT();
     }
-    checkIfLocationPermissionAllowed();
   }
 
   @override
@@ -87,7 +91,9 @@ class _HomeTabPageState extends State<HomeTabPage> {
             locateDriverPosition();
           },
         ),
-        statusText != "Online"
+
+        // online/ offline situation UI
+        statusText != ONLINE
             ? Container(
                 height: MediaQuery.of(context).size.height,
                 width: double.infinity,
@@ -95,25 +101,29 @@ class _HomeTabPageState extends State<HomeTabPage> {
               )
             : Container(),
         Positioned(
-          top: statusText != "Online"
+          top: statusText != ONLINE
               ? MediaQuery.of(context).size.height * 0.4
               : 25,
           left: 0,
           right: 0,
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ElevatedButton(
+              // press when the courier is offline and want to start shift
               onPressed: () {
                 if (!isCourierActive!) {
                   courierIsOnline();
                   setState(() {
-                    statusText = "Online";
+                    statusText = ONLINE;
                     isCourierActive = true;
-                    prefs.setString('isActive', "true");
+                    prefs.setString(
+                        'isActive', "true"); //save for get out from the app
                     buttonColor = Colors.red;
                   });
-                  updateCourierLocationAtRT();
-                  Fluttertoast.showToast(msg: "you are online now");
+                  updateCourierLocationAtRT(); // start to follow the locaton stream
+                  Fluttertoast.showToast(
+                      msg: "you are online now"); // message for user
                 } else {
+                  // press when the courier is inline and want to stop shift
                   courierIsOffline();
                   setState(() {
                     statusText = "Start Shift";
@@ -131,7 +141,8 @@ class _HomeTabPageState extends State<HomeTabPage> {
                   borderRadius: BorderRadius.circular(26),
                 ),
               ),
-              child: statusText != "Online"
+              // icons for UI
+              child: statusText != ONLINE
                   ? Text(
                       statusText,
                       style: const TextStyle(
@@ -153,36 +164,34 @@ class _HomeTabPageState extends State<HomeTabPage> {
   }
 
   void courierIsOnline() async {
+    // get location in high piority
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
     courierCurrentPosition = pos;
+    // init and updat  locaction in firebase
     Geofire.initialize("activeCouriers");
     DatabaseReference indexRef =
         FirebaseDatabase.instance.ref().child("indexes");
     GeoCoord geoCoord = GeoCoord(
         lon: courierCurrentPosition!.longitude,
         lat: courierCurrentPosition!.latitude);
-    var index = h3.geoToH3(geoCoord, 7);
+    var index = h3.geoToH3(geoCoord, 7); // save index in firebase in h3 format
     indexRef.child(userId).set(index.toRadixString(16));
 
     if (mounted) {
       Geofire.setLocation(userId, courierCurrentPosition!.latitude,
           courierCurrentPosition!.longitude);
     }
-
     //update the stauts of the courier
-
     updateCourierStatus("idle");
   }
 
   void courierIsOffline() async {
+    // remove location from fire base
     FirebaseDatabase.instance.ref().child("indexes").child(userId).remove();
     await Geofire.removeLocation(userId);
     updateCourierStatus("offline");
-    /*Future.delayed(const Duration(milliseconds: 2000), () async {
-      SystemNavigator.pop();
-    });*/
   }
 
   void updateCourierLocationAtRT() {
@@ -228,6 +237,7 @@ void updateCourierStatus(String status) async {
   }
 }
 
+// update delivery status in the server
 Future<String> updateDeliveryStatus(String status, Delivery delivery) async {
   var deliveryId = delivery.id;
   var json = jsonEncode(<String, String>{

@@ -41,13 +41,12 @@ class _MyDeliveriesTabsState extends State<MyDeliveriesTabs> {
 
   void _filterDeliveries(value) {
     setState(() {
-      filteredDeliveries =
-          Provider.of<AllDeliveriesInfo>(context, listen: false)
-              .myDeliveries
-              .where((delivery) => delivery.srcContact.name
-                  .toLowerCase()
-                  .contains(value.toLowerCase()))
-              .toList();
+      filteredDeliveries = Provider.of<AllDeliveriesInfo>(context,
+              listen: false)
+          .myDeliveries
+          .where((delivery) =>
+              delivery.srcAddress.toLowerCase().contains(value.toLowerCase()))
+          .toList();
     });
   }
 

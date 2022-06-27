@@ -28,13 +28,12 @@ class _FeedTabState extends State<FeedTab> {
 
   void _filterDeliveries(value) {
     setState(() {
-      filteredDeliveries =
-          Provider.of<AllDeliveriesInfo>(context, listen: false)
-              .feedDeliveries
-              .where((delivery) => delivery.srcContact.name
-                  .toLowerCase()
-                  .contains(value.toLowerCase()))
-              .toList();
+      filteredDeliveries = Provider.of<AllDeliveriesInfo>(context,
+              listen: false)
+          .feedDeliveries
+          .where((delivery) =>
+              delivery.srcAddress.toLowerCase().contains(value.toLowerCase()))
+          .toList();
     });
   }
 
